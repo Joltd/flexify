@@ -22,6 +22,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import AddIcon from "@mui/icons-material/Add";
 import { useBreakpoints } from "@/lib/breakpoints";
 import { ApplicationBar } from "@/components/ApplicationBar";
+import { ResponsiveLayout } from "@/components/ResponsiveLayout";
 
 export function AdminListPage() {
   const router = useRouter()
@@ -42,22 +43,7 @@ export function AdminListPage() {
 
   return <>
     <ApplicationBar title="Admin" />
-    <Grid2
-      margin={{
-        xs: "0",
-        sm: "16px 32px",
-        md: "32px auto",
-        lg: "32px 200px",
-        xl: "32px auto",
-      }}
-      width={{
-        xs: "100%",
-        sm: "calc(100% - 64px)",
-        md: "836px",
-        lg: "calc(100% - 400px)",
-        xl: "1136px",
-      }}
-    >
+    <ResponsiveLayout>
       {user.error ? (
         <Alert sx={{ margin: "16px" }} severity="error">{user.error || 'Unknown error'}</Alert>
       ) : !user.loading ? (
@@ -109,6 +95,6 @@ export function AdminListPage() {
           <Skeleton height="48px" width="100%"/>
         </Stack>
       )}
-    </Grid2>
+    </ResponsiveLayout>
   </>
 }

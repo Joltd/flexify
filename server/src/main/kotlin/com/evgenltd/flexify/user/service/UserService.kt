@@ -35,6 +35,7 @@ class UserService(
         if (principal !is Jwt) {
             return false
         }
+        // todo if applications changed this will be invalid
         val applications = principal.claims?.get(SecurityConfig.APPLICATIONS)
         if (applications !is List<*>) {
             return false

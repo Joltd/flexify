@@ -8,11 +8,13 @@ export interface UserRecord {
 export enum MicroApp {
   ADMIN = 'ADMIN',
   ENTITY = 'ENTITY',
+  JIRIFY = 'JIRIFY',
 }
 
 export const MicroAppLabel = {
   [MicroApp.ADMIN]: 'Admin',
   [MicroApp.ENTITY]: 'Entity',
+  [MicroApp.JIRIFY]: 'Jirify',
 };
 
 export function microAppLabels(applications: MicroApp[]): string | null {

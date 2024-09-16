@@ -23,7 +23,9 @@ export async function DELETE(request: NextRequest) {
 async function exchange(request: NextRequest) {
   const token = request.cookies.get('token')?.value
   if (!token) {
-    return NextResponse.redirect('/login')
+    return NextResponse.json({
+      detail: 'Unauthorized'
+    }, { status: 401 })
   }
 
   const init: RequestInit = {
