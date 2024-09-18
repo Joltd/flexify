@@ -3,9 +3,13 @@ package com.evgenltd.flexify.user.service
 import com.evgenltd.flexify.common.ApplicationException
 import com.evgenltd.flexify.microapp.MicroApp
 import com.evgenltd.flexify.user.config.SecurityConfig
+import com.evgenltd.flexify.user.entity.User
 import com.evgenltd.flexify.user.record.ApplicationUser
 import com.evgenltd.flexify.user.repository.UserRepository
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Service
@@ -14,6 +18,11 @@ import org.springframework.stereotype.Service
 class UserService(
     private val userRepository: UserRepository,
 ) : UserDetailsService {
+
+    fun getCurrentUser(): User? {
+        val authentication = SecurityContextHolder.getContext().authentication
+        return userRepository.findByLoginAndDeletedIsFalse(authentication.name)
+    }
 
     override fun loadUserByUsername(username: String?): ApplicationUser {
         if (username == null) {

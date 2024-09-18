@@ -1,7 +1,5 @@
-import { ApplicationBar } from "@/components/ApplicationBar";
+import { JirifyHomePage } from "@/fragments/jirify/JirifyHomePage";
 
 export function Page() {
-  return <>
-    <ApplicationBar title="Jirify" />
-  </>
+  return <JirifyHomePage />
 }
