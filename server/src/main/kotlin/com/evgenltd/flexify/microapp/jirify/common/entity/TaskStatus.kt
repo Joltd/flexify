@@ -1,6 +1,7 @@
 package com.evgenltd.flexify.microapp.jirify.common.entity
 
 enum class TaskStatus {
+    UNKNOWN,
     TODO,
     IN_PROGRESS,
     REVIEW,

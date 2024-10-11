@@ -32,6 +32,8 @@ class JiraIntegration(
 
     fun getIssue(key: String): JiraIssue = exchange<Unit, JiraIssue>(GET, "/rest/agile/1.0/issue/$key")
 
+    fun getIssueChangelog(key: String): String = exchange<Unit, String>(GET, "/rest/api/3/issue/$key/changelog")
+
     private inline fun <T,reified R> exchange(method: HttpMethod, path: String, body: T? = null): R {
         val headers = HttpHeaders().apply {
             setBasicAuth(user, token)

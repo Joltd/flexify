@@ -13,14 +13,13 @@ import {
   Typography, useMediaQuery, useTheme
 } from "@mui/material";
 import AppsIcon from "@mui/icons-material/Apps";
-import { useApi } from "@/lib/api";
-import { microAppLabels, UserRecord } from "@/lib/types";
+import { useApi } from "@/lib/common/api";
+import { microAppLabels, UserRecord } from "@/lib/common/types";
 import { API_URL, URL } from "@/lib/urls";
 import { Fragment, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import PersonIcon from "@mui/icons-material/Person";
 import AddIcon from "@mui/icons-material/Add";
-import { useBreakpoints } from "@/lib/breakpoints";
+import { useBreakpoints } from "@/lib/common/breakpoints";
 import { ApplicationBar } from "@/components/ApplicationBar";
 import { ResponsiveLayout } from "@/components/ResponsiveLayout";
 

@@ -39,7 +39,7 @@ async function exchange(request: NextRequest) {
     init.body = await request.text()
   }
   try {
-    return await fetch(`${process.env.BACKEND_HOST}${request.nextUrl.pathname}`, init)
+    return await fetch(`${process.env.BACKEND_HOST}${request.nextUrl.pathname}?${request.nextUrl.searchParams}`, init)
   } catch (e) {
     console.log(e)
     return NextResponse.json({

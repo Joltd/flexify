@@ -1,6 +1,9 @@
 package com.evgenltd.flexify.microapp.jirify.common.entity
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import jakarta.persistence.*
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import java.util.*
 
 @Entity
@@ -11,9 +14,38 @@ data class Branch(
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
 
-    var key: String,
+    var name: String,
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    var properties: Properties? = null,
 
     @ManyToOne
-    var repository: Repository
+    var repository: Repository,
 
-)
+    @ManyToOne
+    var parent: Branch? = null,
+
+    @OneToMany(mappedBy = "parent")
+    var children: MutableList<Branch> = mutableListOf(),
+
+    @ManyToMany(mappedBy = "branches")
+    var tasks: MutableList<Task> = mutableListOf(),
+
+) {
+
+    @JsonTypeInfo(
+        use = JsonTypeInfo.Id.CLASS,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "_class",
+    )
+    interface Properties
+
+    override fun toString(): String {
+        return "Branch(id=$id, " +
+                "name='$name', " +
+                "properties=$properties, " +
+                "repository=${repository.id}, " +
+                "parent=${parent?.id})"
+    }
+
+}

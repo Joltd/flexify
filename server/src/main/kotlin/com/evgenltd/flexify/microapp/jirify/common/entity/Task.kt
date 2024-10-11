@@ -1,6 +1,9 @@
 package com.evgenltd.flexify.microapp.jirify.common.entity
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import jakarta.persistence.*
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import java.time.LocalDateTime
 import java.util.*
 
@@ -21,7 +24,7 @@ data class Task(
     var url: String,
 
     @Enumerated(EnumType.STRING)
-    var status: TaskStatus? = null,
+    var status: TaskStatus = TaskStatus.UNKNOWN,
 
     var externalStatus: String? = null,
 
@@ -29,10 +32,45 @@ data class Task(
 
     var updatedAt: LocalDateTime? = null,
 
+    @JdbcTypeCode(SqlTypes.JSON)
+    var properties: Properties? = null,
+
     @ManyToOne
     var workspace: Workspace,
 
     @ManyToOne
     var assignee: Employee? = null,
 
-) {}
+    @ManyToMany
+    @JoinTable(
+        name = "task_branches",
+        joinColumns = [JoinColumn(name = "task_id")],
+        inverseJoinColumns = [JoinColumn(name = "branch_id")]
+    )
+    var branches: MutableList<Branch> = mutableListOf(),
+
+) {
+
+    @JsonTypeInfo(
+        use = JsonTypeInfo.Id.CLASS,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "_class",
+    )
+    interface Properties
+
+    override fun toString(): String {
+        return "Task(id=$id, " +
+                "externalId='$externalId', " +
+                "key='$key', " +
+                "summary='$summary', " +
+                "url='$url', " +
+                "status=$status, " +
+                "externalStatus=$externalStatus, " +
+                "priority=$priority, " +
+                "updatedAt=$updatedAt, " +
+                "properties=$properties, " +
+                "workspace=${workspace.id}, " +
+                "assignee=${assignee?.id})"
+    }
+
+}

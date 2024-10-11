@@ -2,10 +2,10 @@
 import { AppBar, Avatar, IconButton, Link, Stack, Toolbar, Typography, useTheme } from "@mui/material";
 import AppsIcon from "@mui/icons-material/Apps";
 import { API_URL, URL } from "@/lib/urls";
-import { useApi } from "@/lib/api";
+import { useApi } from "@/lib/common/api";
 import { useEffect } from "react";
-import { useBreakpoints } from "@/lib/breakpoints";
-import { UserRecord } from "@/lib/types";
+import { useBreakpoints } from "@/lib/common/breakpoints";
+import { UserRecord } from "@/lib/common/types";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DoneIcon from "@mui/icons-material/Done";
 

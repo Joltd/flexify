@@ -10,9 +10,9 @@ import {
   TextFieldElement,
   useForm
 } from "react-hook-form-mui";
-import { ApiOptions, useApi } from "@/lib/api";
-import { MicroApp, MicroAppLabel, UserRecord } from "@/lib/types";
-import { API_URL, URL, URLS } from "@/lib/urls";
+import { ApiOptions, useApi } from "@/lib/common/api";
+import { MicroApp, MicroAppLabel, UserRecord } from "@/lib/common/types";
+import { API_URL, URL } from "@/lib/urls";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Alert, Skeleton, Stack, Typography } from "@mui/material";

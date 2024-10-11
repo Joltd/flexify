@@ -1,0 +1,1 @@
+alter table sprints add column active boolean default false;

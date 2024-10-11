@@ -1,5 +1,5 @@
+import { HomePage } from "@/fragments/HomePage";
+
 export default function Page() {
-  return <div>
-    test
-  </div>
+  return <HomePage />
 }

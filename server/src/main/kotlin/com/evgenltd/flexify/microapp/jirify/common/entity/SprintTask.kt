@@ -24,5 +24,4 @@ data class SprintTask(
     @ManyToOne
     var task: Task,
 
-
-    )
+)

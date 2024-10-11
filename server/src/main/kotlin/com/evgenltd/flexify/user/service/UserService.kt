@@ -24,6 +24,10 @@ class UserService(
         return userRepository.findByLoginAndDeletedIsFalse(authentication.name)
     }
 
+    fun getCurrentUserNotNull(): User {
+        return getCurrentUser() ?: throw ApplicationException("User not found")
+    }
+
     override fun loadUserByUsername(username: String?): ApplicationUser {
         if (username == null) {
             throw ApplicationException("Username is not specified")
