@@ -1,0 +1,1 @@
+alter table repositories add column url text;

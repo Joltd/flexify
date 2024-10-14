@@ -31,6 +31,7 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.gitlab4j:gitlab4j-api:6.0.0-rc.5")
     runtimeOnly("org.postgresql:postgresql")
 }
 

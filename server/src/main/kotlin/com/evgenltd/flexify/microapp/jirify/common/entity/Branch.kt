@@ -16,6 +16,8 @@ data class Branch(
 
     var name: String,
 
+    var base: Boolean = false,
+
     @JdbcTypeCode(SqlTypes.JSON)
     var properties: Properties? = null,
 
@@ -43,6 +45,7 @@ data class Branch(
     override fun toString(): String {
         return "Branch(id=$id, " +
                 "name='$name', " +
+                "base=$base, " +
                 "properties=$properties, " +
                 "repository=${repository.id}, " +
                 "parent=${parent?.id})"

@@ -42,6 +42,11 @@ export enum JiraIssueStatusColor {
   GREEN = "GREEN",
 }
 
+export enum DevelopmentArea {
+  FRONTEND = 'FRONTEND',
+  BACKEND = 'BACKEND',
+}
+
 export interface SelectRepository {
   id: string;
   name: string;

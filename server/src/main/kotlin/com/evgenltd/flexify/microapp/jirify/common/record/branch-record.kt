@@ -18,3 +18,10 @@ data class CreateBranch(
     val parent: UUID?,
     val repository: UUID,
 )
+
+data class CreateBranchRequest(
+    val workspace: UUID,
+    val name: String,
+    val parent: UUID?,
+    val repository: UUID,
+)

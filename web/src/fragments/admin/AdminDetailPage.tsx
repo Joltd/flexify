@@ -1,7 +1,7 @@
 'use client'
 
-import { ApplicationBar } from "@/components/ApplicationBar";
-import { ResponsiveLayout } from "@/components/ResponsiveLayout";
+import { ApplicationBar } from "@/components/common/ApplicationBar";
+import { ResponsiveLayout } from "@/components/common/ResponsiveLayout";
 import {
   CheckboxButtonGroup,
   CheckboxElement,

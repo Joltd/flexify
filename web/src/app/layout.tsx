@@ -1,4 +1,4 @@
-import { Theme } from "@/components/Theme";
+import { Theme } from "@/components/common/Theme";
 import { ReactNode } from "react";
 import './global.css';
 

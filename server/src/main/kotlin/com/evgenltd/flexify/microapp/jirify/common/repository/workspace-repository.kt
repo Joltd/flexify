@@ -16,8 +16,8 @@ interface WorkspaceRepository : JpaRepository<Workspace, UUID> {
 
 }
 
-fun WorkspaceRepository.workspace(user: User, workspaceId: UUID): Workspace {
-    val workspace = findByIdOrNull(workspaceId)
+fun WorkspaceRepository.workspace(user: User, id: UUID): Workspace {
+    val workspace = findByIdOrNull(id)
         ?: throw ApplicationException("Workspace not found")
 
     if (workspace.user.id != user.id) {

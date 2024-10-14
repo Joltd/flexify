@@ -20,8 +20,9 @@ import { Fragment, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AddIcon from "@mui/icons-material/Add";
 import { useBreakpoints } from "@/lib/common/breakpoints";
-import { ApplicationBar } from "@/components/ApplicationBar";
-import { ResponsiveLayout } from "@/components/ResponsiveLayout";
+import { ApplicationBar } from "@/components/common/ApplicationBar";
+import { ResponsiveLayout } from "@/components/common/ResponsiveLayout";
+import { ListSkeleton } from "@/components/common/skeleton/ListSkeleton";
 
 export function AdminListPage() {
   const router = useRouter()
@@ -87,12 +88,7 @@ export function AdminListPage() {
           </Fab>
         </List>
       ) : (
-        <Stack padding="16px">
-          <Skeleton height="48px" width="100%"/>
-          <Skeleton height="48px" width="100%"/>
-          <Skeleton height="48px" width="100%"/>
-          <Skeleton height="48px" width="100%"/>
-        </Stack>
+        <ListSkeleton />
       )}
     </ResponsiveLayout>
   </>

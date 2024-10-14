@@ -14,7 +14,7 @@ export function useApi<T>(path: string, defaultData?: T) {
   const [data, setData] = useState<T>(defaultData || {} as T)
   const [loading, setLoading] = useState(false)
 
-  async function doExchange(method: string, options?: ApiOptions): Promise<void> {
+  async function doExchange<R>(method: string, options?: ApiOptions): Promise<R> {
     let actualPath = path
     if (options?.pathParams) {
       Object.keys(options.pathParams)
@@ -49,42 +49,50 @@ export function useApi<T>(path: string, defaultData?: T) {
     const body = await response.text()
     if (response.status === 401) {
       router.push("/login")
-    } else if (response.status === 200 && body) {
-      setData(JSON.parse(body))
+    } else if (response.status === 200) {
+      const data = body ? JSON.parse(body) : undefined
+      setData(data)
+      return data
     } else if (body) {
       setError(JSON.parse(body).detail)
-      return Promise.reject()
     }
+    console.log('Common reject')
+    return Promise.reject()
   }
 
-  async function exchange(method: string, options?: ApiOptions): Promise<void> {
+  async function exchange<R>(method: string, options?: ApiOptions): Promise<R> {
     setLoading(true)
     try {
-      await doExchange(method, options)
+      return await doExchange(method, options)
     } finally {
       setLoading(false)
     }
   }
 
-  async function get(options?: ApiOptions): Promise<void> {
+  async function get<R>(options?: ApiOptions): Promise<R> {
     return exchange("GET", options)
   }
 
-  async function post(options?: ApiOptions): Promise<void> {
+  async function post<R>(options?: ApiOptions): Promise<R> {
     return exchange("POST", options)
   }
 
-  async function put(options?: ApiOptions): Promise<void> {
+  async function put<R>(options?: ApiOptions): Promise<R> {
     return exchange("PUT", options)
   }
 
-  async function patch(options?: ApiOptions): Promise<void> {
+  async function patch<R>(options?: ApiOptions): Promise<R> {
     return exchange("PATCH", options)
   }
 
-  async function del(options?: ApiOptions): Promise<void> {
+  async function del<R>(options?: ApiOptions): Promise<R> {
     return exchange("DELETE", options)
   }
 
-  return { get, post, put, patch, del, data, error, loading }
+  function reset() {
+    setError(null)
+    setData(defaultData || {} as T)
+  }
+
+  return { get, post, put, patch, del, data, error, loading, reset }
 }

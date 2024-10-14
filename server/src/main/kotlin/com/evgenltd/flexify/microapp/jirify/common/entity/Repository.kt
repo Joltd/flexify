@@ -1,5 +1,6 @@
 package com.evgenltd.flexify.microapp.jirify.common.entity
 
+import com.evgenltd.flexify.common.ApplicationException
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import jakarta.persistence.*
 import org.hibernate.annotations.JdbcTypeCode
@@ -15,6 +16,8 @@ data class Repository(
     var id: UUID? = null,
 
     var name: String,
+
+    var url: String? = null,
 
     @JdbcTypeCode(SqlTypes.JSON)
     var properties: Properties? = null,
@@ -32,6 +35,15 @@ data class Repository(
         property = "_class",
     )
     interface Properties
+
+    fun branch(id: UUID): Branch? {
+        val result = branches.filter { it.id == id }
+        if (result.size > 1) {
+            throw ApplicationException("Multiple branches with the same id")
+        }
+
+        return result.firstOrNull()
+    }
 
     override fun toString(): String = "Repository(" +
             "id=$id, " +

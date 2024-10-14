@@ -1,5 +1,4 @@
-import { JiraIssueStatusColor, SelectRepository, TaskStatusEnum } from "@/lib/jirify/types";
-import { SquadAppJiraIssueStatusBadge } from "@/components/jirify/squad-app/SquadAppJiraIssueStatusBadge";
+import { DevelopmentArea, JiraIssueStatusColor, SelectRepository, TaskStatusEnum } from "@/lib/jirify/types";
 
 export enum SquadAppJiraIssueStatusEnum {
   UNKNOWN = 'Unknown',
@@ -22,43 +21,67 @@ export const SquadAppJiraIssueStatusColor = {
 }
 
 export interface WorkspaceResponse {
-  id: string,
-  name: string,
-  backendRepository: SelectRepository,
-  frontendRepository: SelectRepository,
+  id: string
+  name: string
+  backendRepository: RepositoryRecord
+  frontendRepository: RepositoryRecord
 }
 
 export interface TaskRecord {
-  id: string,
+  id: string
   key: string
-  summary: string,
-  url: string,
-  status?: TaskStatusEnum,
-  externalStatus?: string,
+  summary: string
+  url: string
+  status?: TaskStatusEnum
+  externalStatus?: string
   priority?: number
 }
 
 export interface ActiveSprintResponse {
-  id: string,
-  key: string,
-  updatedAt: string,
-  groups: SprintGroupRecord[],
+  id: string
+  key: string
+  updatedAt: string
+  groups: SprintGroupRecord[]
 }
 
 export interface SprintGroupRecord {
-  status: TaskStatusEnum,
-  tasks: SprintTaskRecord[],
+  status: TaskStatusEnum
+  tasks: SprintTaskRecord[]
 }
 
 export interface SprintTaskRecord {
-  id: string,
-  key: string,
-  summary: string,
-  url: string,
-  status: TaskStatusEnum,
-  externalStatus?: SquadAppJiraIssueStatusEnum,
-  estimation?: number,
-  priority?: number,
-  backend: boolean,
-  frontend: boolean,
+  id: string
+  key: string
+  summary: string
+  url: string
+  status: TaskStatusEnum
+  externalStatus?: SquadAppJiraIssueStatusEnum
+  estimation?: number
+  priority?: number
+  backend: boolean
+  frontend: boolean
+}
+
+export interface RepositoryRecord {
+  id: string
+  name: string
+  type: DevelopmentArea
+}
+
+export interface BranchRecord {
+  id: string
+  name: string
+  kind: BranchKind
+}
+
+export enum BranchKind {
+  PROD = 'PROD',
+  RELEASE = 'RELEASE',
+  DEV = 'DEV',
+}
+
+export interface MergeRequestRecord {
+  iid: number
+  mergeStatus: string
+  url: string
 }

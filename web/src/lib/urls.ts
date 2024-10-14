@@ -32,6 +32,12 @@ export const API_URL = {
         activeSprint: '/api/app/jirify/squad-app/home/active-sprint',
         beginWork: '/api/app/jirify/squad-app/home/begin-work',
       },
+      branch: {
+        list: '/api/app/jirify/squad-app/branch',
+        base: '/api/app/jirify/squad-app/branch/base',
+        mergeRequest: '/api/app/jirify/squad-app/branch/merge-request',
+        mergeRequestId: '/api/app/jirify/squad-app/branch/merge-request/:id',
+      },
       workspace: '/api/app/jirify/squad-app/workspace',
       sync: '/api/app/jirify/squad-app/sync',
       task: '/api/app/jirify/squad-app/task',

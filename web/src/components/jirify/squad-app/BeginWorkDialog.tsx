@@ -18,18 +18,6 @@ export interface BeginWorkDialogProps {
   onClose: () => void;
 }
 
-export function useBeginWorkDialog() {
-  const [open, setOpen] = useState(false)
-
-  return {
-    open: () => setOpen(true),
-    props: {
-      open,
-      onClose: () => setOpen(false)
-    }
-  }
-}
-
 const defaultValues = {
   sendToJira: false,
   backend: null,
@@ -48,7 +36,7 @@ export function BeginWorkDialog({
 
   useEffect(() => {
     if (open) {
-      form.reset({...defaultValues})
+      form.reset(defaultValues)
       workspaceApi.get()
     }
   }, [open]);
@@ -102,7 +90,7 @@ export function BeginWorkDialog({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button type="submit" disabled={beginWorkApi.loading}>Begin</Button>
+        <Button type="submit" color="primary" disabled={beginWorkApi.loading}>Begin</Button>
       </DialogActions>
     </FormContainer>
   </Dialog>

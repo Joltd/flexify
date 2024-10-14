@@ -14,7 +14,7 @@ interface TaskRepository : JpaRepository<Task, UUID> {
 
 }
 
-fun TaskRepository.findByIdAndUser(id: UUID, user: User): Task {
+fun TaskRepository.task(user: User, id: UUID): Task {
     val task = findById(id).orElse(null)
         ?: throw ApplicationException("Task not found")
 

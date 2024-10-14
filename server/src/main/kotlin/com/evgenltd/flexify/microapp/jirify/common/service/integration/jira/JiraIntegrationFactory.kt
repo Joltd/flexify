@@ -13,8 +13,6 @@ class JiraIntegrationFactory(
         user: String,
         token: String,
         board: String
-    ): JiraIntegration {
-        return JiraIntegration(rest, host, user, token, board)
-    }
+    ): JiraIntegration = JiraIntegration(rest, host, user, token, board)
 
 }

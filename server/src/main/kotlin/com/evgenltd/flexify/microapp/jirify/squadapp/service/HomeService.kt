@@ -8,7 +8,7 @@ import com.evgenltd.flexify.microapp.jirify.common.entity.WorkspaceKind
 import com.evgenltd.flexify.microapp.jirify.common.repository.SprintRepository
 import com.evgenltd.flexify.microapp.jirify.common.repository.TaskRepository
 import com.evgenltd.flexify.microapp.jirify.common.repository.WorkspaceRepository
-import com.evgenltd.flexify.microapp.jirify.common.repository.findByIdAndUser
+import com.evgenltd.flexify.microapp.jirify.common.repository.task
 import com.evgenltd.flexify.microapp.jirify.common.service.TaskBranchRelationService
 import com.evgenltd.flexify.microapp.jirify.squadapp.entity.properties
 import com.evgenltd.flexify.microapp.jirify.squadapp.record.ActiveSprintResponse
@@ -16,7 +16,6 @@ import com.evgenltd.flexify.microapp.jirify.squadapp.record.BeginWorkRequest
 import com.evgenltd.flexify.microapp.jirify.squadapp.record.SprintTaskGroup
 import com.evgenltd.flexify.microapp.jirify.squadapp.record.SprintTaskRecord
 import com.evgenltd.flexify.user.entity.User
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -53,7 +52,7 @@ class HomeService(
 
     @Transactional
     fun beginWork(user: User, request: BeginWorkRequest) {
-        val task = taskRepository.findByIdAndUser(request.taskId, user)
+        val task = taskRepository.task(user, request.taskId)
 
         // send to jira
 
@@ -62,16 +61,16 @@ class HomeService(
 
         request.backend?.let {
             if (it.id != null) {
-                taskBranchRelationService.linkToBranch(task, it.id)
+                taskBranchRelationService.linkToBranch(user, task, it.id)
             } else if (it.create != null) {
-                taskBranchRelationService.linkToNewBranch(task, it.create.name, it.create.parent, it.create.repository)
+                taskBranchRelationService.linkToNewBranch(user, task, it.create.name, it.create.parent, it.create.repository)
             }
         }
         request.frontend?.let {
             if (it.id != null) {
-                taskBranchRelationService.linkToBranch(task, it.id)
+                taskBranchRelationService.linkToBranch(user, task, it.id)
             } else if (it.create != null) {
-                taskBranchRelationService.linkToNewBranch(task, it.create.name, it.create.parent, it.create.repository)
+                taskBranchRelationService.linkToNewBranch(user, task, it.create.name, it.create.parent, it.create.repository)
             }
         }
 
