@@ -11,12 +11,12 @@ export interface PriorityBadgeProps {
 }
 
 const icons = [
-  <RadioButtonUncheckedIcon sx={{ color: colors.gray }} />,
-  <KeyboardDoubleArrowUpIcon sx={{ color: colors.red }} />,
-  <KeyboardArrowUpIcon sx={{ color: colors.red }} />,
-  <RemoveIcon sx={{ color: colors.orange }} />,
-  <KeyboardArrowDownIcon sx={{ color: colors.blue}} />,
-  <KeyboardDoubleArrowDownIcon sx={{ color: colors.blue }} />,
+  <RadioButtonUncheckedIcon key={0} sx={{ color: colors.gray }} />,
+  <KeyboardDoubleArrowUpIcon key={1} sx={{ color: colors.red }} />,
+  <KeyboardArrowUpIcon key={2} sx={{ color: colors.red }} />,
+  <RemoveIcon key={3} sx={{ color: colors.orange }} />,
+  <KeyboardArrowDownIcon key={4} sx={{ color: colors.blue}} />,
+  <KeyboardDoubleArrowDownIcon key={5} sx={{ color: colors.blue }} />,
 ]
 
 export function PriorityBadge({ priority }: PriorityBadgeProps) {

@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+
+  server:
+    image: flexify-server:latest
+    ports:
+      - "9501:8080"
+    environment:
+      DB_HOST: localhost:5432
+      DB_USER: root_user
+      DB_PASSWORD: root_password
+
+  web:
+    image: flexify-web:latest
+    ports:
+      - "9301:80"
