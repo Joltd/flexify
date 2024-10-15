@@ -73,6 +73,16 @@ jobs:
             docker load -i ~/build/${{ env.PROJECT_NAME }}/server.tar
             docker load -i ~/build/${{ env.PROJECT_NAME }}/web.tar
 
+      - name: Tag local images as latest
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.REMOTE_PRIVATE_KEY }}
+          script: |
+            docker tag ${{ env.PROJECT_NAME }}-web:${{ env.PROJECT_VERSION }} ${{ env.PROJECT_NAME }}-web:latest
+            docker tag ${{ env.PROJECT_NAME }}-server:${{ env.PROJECT_VERSION }} ${{ env.PROJECT_NAME }}-server:latest
+
       - name: Deploy
         uses: appleboy/ssh-action@v1.0.0
         with:
