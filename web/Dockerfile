@@ -3,8 +3,6 @@ FROM node:18-alpine
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-COPY ./public ./public
-
 RUN mkdir .next
 
 COPY ./.next/standalone ./
