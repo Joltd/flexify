@@ -14,4 +14,4 @@ services:
   web:
     image: flexify-web:latest
     ports:
-      - "9301:80"
+      - "9301:3000"
