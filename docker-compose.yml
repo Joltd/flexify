@@ -4,6 +4,7 @@ services:
 
   server:
     image: flexify-server:latest
+    container_name: flexify-server
     ports:
       - "9501:8080"
     environment:
@@ -13,5 +14,8 @@ services:
 
   web:
     image: flexify-web:latest
+    container_name: flexify-web
     ports:
       - "9301:3000"
+    environment:
+      BACKEND_HOST: http://flexify-server:8080
