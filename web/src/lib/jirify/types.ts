@@ -62,3 +62,9 @@ export interface SelectEmployee {
   id: string;
   name: string;
 }
+
+export interface SelectTask {
+  id: string;
+  key: string;
+  summary: string;
+}

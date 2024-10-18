@@ -4,6 +4,7 @@ import com.evgenltd.flexify.common.ApplicationException
 import com.evgenltd.flexify.microapp.jirify.common.entity.*
 import com.evgenltd.flexify.microapp.jirify.common.repository.*
 import com.evgenltd.flexify.microapp.jirify.common.service.integration.jira.*
+import com.evgenltd.flexify.microapp.jirify.squadapp.entity.TaskProperties
 import com.evgenltd.flexify.microapp.jirify.squadapp.entity.properties
 import com.evgenltd.flexify.user.entity.User
 import org.springframework.stereotype.Service
@@ -89,18 +90,23 @@ class TaskSyncService(
         sprint.updatedAt = LocalDateTime.now()
     }
 
-    private fun createTask(jiraIssue: JiraIssue, workspace: Workspace, employee: Employee?, host: String?): Task = Task(
-        externalId = jiraIssue.id,
-        key = jiraIssue.key,
-        summary = jiraIssue.fields.summary,
-        url = "$host/browse/${jiraIssue.key}",
-        status = mapping[jiraIssue.fields.status?.name] ?: TaskStatus.UNKNOWN,
-        externalStatus = jiraIssue.fields.status?.name,
-        priority = jiraIssue.fields.priority?.id?.toIntOrNull(),
-        assignee = employee,
-        workspace = workspace,
-        updatedAt = LocalDateTime.now(),
-    ).let { taskRepository.save(it) }
+    private fun createTask(jiraIssue: JiraIssue, workspace: Workspace, employee: Employee?, host: String?): Task {
+        val backend = "Backend" in jiraIssue.fields.labels
+        val frontend = "Frontend" in jiraIssue.fields.labels
+        return Task(
+            externalId = jiraIssue.id,
+            key = jiraIssue.key,
+            summary = jiraIssue.fields.summary,
+            url = "$host/browse/${jiraIssue.key}",
+            status = mapping[jiraIssue.fields.status?.name] ?: TaskStatus.UNKNOWN,
+            externalStatus = jiraIssue.fields.status?.name,
+            priority = jiraIssue.fields.priority?.id?.toIntOrNull(),
+            assignee = employee,
+            workspace = workspace,
+            updatedAt = LocalDateTime.now(),
+            properties = TaskProperties(backend, frontend)
+        ).let { taskRepository.save(it) }
+    }
 
     private fun updateTask(jiraIssue: JiraIssue, task: Task, employee: Employee?, host: String?) {
         task.externalId = jiraIssue.id
@@ -114,6 +120,16 @@ class TaskSyncService(
         transfers[task.externalStatus]
             ?.get(task.status)
             ?.let { task.status = it }
+        val backend = "Backend" in jiraIssue.fields.labels
+        val frontend = "Frontend" in jiraIssue.fields.labels
+        if (task.properties == null) {
+            task.properties = TaskProperties()
+        }
+        task.properties()
+            .let {
+                it.backend = backend
+                it.frontend = frontend
+            }
     }
 
     private fun createSprintTask(jiraIssue: JiraIssue, task: Task, sprint: Sprint): SprintTask = SprintTask(

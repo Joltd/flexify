@@ -26,6 +26,9 @@ export const API_URL = {
       employee: {
         select: '/api/app/jirify/employee/select',
       },
+      task: {
+        select: '/api/app/jirify/task/select',
+      }
     },
     squadApp: {
       home: {

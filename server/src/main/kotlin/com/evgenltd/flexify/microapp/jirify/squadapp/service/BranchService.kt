@@ -26,6 +26,7 @@ class BranchService(
     fun list(user: User, repositoryId: UUID): List<BranchRecord> =
         repositoryRepository.repository(user, repositoryId)
             .branches
+            .filter { !it.base }
             .map {
                 BranchRecord(
                     it.id!!,
@@ -45,14 +46,6 @@ class BranchService(
                     it.properties().kind,
                 )
             }
-
-    fun sendToReview(user: User, repositoryId: UUID) {
-        val repository = repositoryRepository.repository(user, repositoryId)
-
-        val url = repository.url ?: throw ApplicationException("Repository URL is not set")
-
-        val projectId = repository.properties().projectId
-    }
 
     fun findMergeRequest(user: User, repositoryId: UUID, sourceBranchId: UUID?, targetBranchId: UUID?, mergeRequestIid: Long?): MergeRequestResponse? {
         val repository = repositoryRepository.repository(user, repositoryId)

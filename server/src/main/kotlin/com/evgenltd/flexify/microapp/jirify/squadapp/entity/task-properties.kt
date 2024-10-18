@@ -4,8 +4,8 @@ import com.evgenltd.flexify.common.ApplicationException
 import com.evgenltd.flexify.microapp.jirify.common.entity.Task
 
 data class TaskProperties(
-    var backend: Boolean,
-    var frontend: Boolean,
+    var backend: Boolean = false,
+    var frontend: Boolean = false,
 ) : Task.Properties
 
 fun Task.properties(): TaskProperties = properties as? TaskProperties
