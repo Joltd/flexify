@@ -1,8 +1,10 @@
-import { Autocomplete, TextField } from "@mui/material";
+import { Autocomplete, Avatar, AvatarGroup, TextField } from "@mui/material";
 import { useApi } from "@/lib/common/api";
 import { SelectEmployee } from "@/lib/jirify/types";
 import { API_URL } from "@/lib/urls";
 import { useEffect, useState } from "react";
+import { Person } from "@mui/icons-material";
+import { blue, green } from "@mui/material/colors";
 
 export interface EmployeeFieldProps {
   workspace: string;
@@ -19,10 +21,13 @@ export function EmployeeField({
   const [employee, setEmployee] = useState<SelectEmployee | null>(null)
 
   useEffect(() => {
+    if (!workspace) {
+      return
+    }
     employeeApi.get({
       queryParams: { workspace }
     })
-  }, []);
+  }, [workspace]);
 
   useEffect(() => {
     const employee = employeeApi.data

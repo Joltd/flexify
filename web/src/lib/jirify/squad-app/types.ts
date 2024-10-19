@@ -40,6 +40,7 @@ export interface TaskRecord {
 export interface ActiveSprintResponse {
   id: string
   key: string
+  workspace: string
   updatedAt: string
   groups: SprintGroupRecord[]
 }
@@ -56,10 +57,17 @@ export interface SprintTaskRecord {
   url: string
   status: TaskStatusEnum
   externalStatus?: SquadAppJiraIssueStatusEnum
+  assignee?: AssigneeRecord
+  performed: boolean
   estimation?: number
   priority?: number
   backend: boolean
   frontend: boolean
+}
+
+export interface AssigneeRecord {
+  id: string
+  name: string
 }
 
 export interface RepositoryRecord {
@@ -72,12 +80,28 @@ export interface BranchRecord {
   id: string
   name: string
   kind: BranchKind
+  readyToProd: boolean
 }
 
 export enum BranchKind {
   PROD = 'PROD',
   RELEASE = 'RELEASE',
   DEV = 'DEV',
+}
+
+export interface BranchAnalysisRecord {
+  id: string
+  name: string
+  tasks: BranchAnalysisTaskRecord[]
+  readyToProd: boolean
+}
+
+export interface BranchAnalysisTaskRecord {
+  id: string
+  key: string
+  summary: string
+  url: string
+  externalStatus?: SquadAppJiraIssueStatusEnum
 }
 
 export interface MergeRequestRecord {

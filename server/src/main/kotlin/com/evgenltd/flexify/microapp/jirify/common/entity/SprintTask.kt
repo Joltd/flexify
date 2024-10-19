@@ -16,6 +16,8 @@ data class SprintTask(
 
     var estimation: Int? = 0,
 
+    var performed: Boolean = false,
+
     var updatedAt: LocalDateTime? = null,
 
     @ManyToOne

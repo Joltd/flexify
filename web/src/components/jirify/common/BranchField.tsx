@@ -1,31 +1,28 @@
 import { useApi } from "@/lib/common/api";
 import { API_URL } from "@/lib/urls";
 import { ChangeEvent, SyntheticEvent, useEffect, useState } from "react";
-import { Autocomplete, Button, IconButton, Skeleton, Stack, TextField, Typography } from "@mui/material";
-import { SelectBranch, SelectRepository } from "@/lib/jirify/types";
+import {
+  Autocomplete,
+  IconButton, Stack,
+  TextField,
+} from "@mui/material";
+import { SelectBranch } from "@/lib/jirify/types";
 import LinkIcon from '@mui/icons-material/Link';
 import CloseIcon from '@mui/icons-material/Close';
+import { Add } from "@mui/icons-material";
 
 export interface BranchFieldProps {
-  workspace: string;
-  defaultRepository?: string;
-  value?: BranchValue | null;
-  onChange: (value: BranchValue | null) => void;
+  workspace: string
+  repository: string
+  nameSuggestion?: string
+  label?: string
+  value: CreateBranch | string | null
+  onChange: (value: CreateBranch | string | null) => void
 }
 
-export interface BranchValue {
-  id?: string;
-  create?: {
-    name: string;
-    parent?: string;
-    repository: string;
-  }
-}
-
-enum Phase {
-  BEGIN = 'BEGIN',
-  REPOSITORY = 'REPOSITORY',
-  BRANCH = 'BRANCH',
+export interface CreateBranch {
+  name: string
+  parent?: string
 }
 
 enum Mode {
@@ -35,183 +32,104 @@ enum Mode {
 
 export function BranchField({
   workspace,
-  defaultRepository,
+  repository,
+  nameSuggestion,
+  label,
   value,
   onChange,
 }: BranchFieldProps) {
-  const repositoryApi = useApi<SelectRepository[]>(API_URL.jirify.common.repository.select, [])
   const branchApi = useApi<SelectBranch[]>(API_URL.jirify.common.branch.select, [])
-  const [phase, setPhase] = useState(Phase.BEGIN)
-  const [mode, setMode] = useState<Mode | null>(null)
-  const [repository, setRepository] = useState<SelectRepository | null>(null)
+  const [mode, setMode] = useState<Mode>(Mode.SELECT)
   const [branch, setBranch] = useState<SelectBranch | null>(null)
   const [name, setName] = useState('')
 
   useEffect(() => {
-    if (workspace) {
-      repositoryApi.get({
-        queryParams: { workspace }
-      })
-      branchApi.get({
-        queryParams: { workspace }
-      })
-    }
-  }, [workspace]);
-
-  useEffect(() => {
-    if (repositoryApi.data.length === 0 || branchApi.data.length === 0) {
-      return;
+    if (!workspace || !repository) {
+      return
     }
 
-    if (value?.id) {
+    branchApi.get({
+      queryParams: { workspace, repository }
+    })
 
+    if (typeof value === 'string') {
       const branch = branchApi.data
-        .find((branch) => branch.id === value.id) || null
+        .find((branch) => branch.id === value) || null
       setBranch(branch)
-
-      const repository = repositoryApi.data
-        .find((repository) => repository.id === branch?.repository) || null
-      setRepository(repository)
-
-      setMode(Mode.SELECT)
-      setPhase(Phase.BRANCH)
-
-    } else if (value?.create) {
-
-      setName(value.create.name)
-
-      const repository = repositoryApi.data
-        .find((repository) => repository.id === value.create?.repository) || null
-      setRepository(repository)
-
-      const branch = branchApi.data
-        .find((branch) => branch.id === value.create?.parent) || null
-      setBranch(branch)
-
-      setMode(Mode.CREATE)
-      setPhase(Phase.BRANCH)
-
     }
-  }, [repositoryApi.data, branchApi.data]);
+  }, [workspace, repository])
 
   const handleCreate = () => {
+    setBranch(null)
+    setName(nameSuggestion || '')
     setMode(Mode.CREATE)
-    setPhase(Phase.REPOSITORY)
-  }
-
-  const handleSelect = () => {
-    setMode(Mode.SELECT)
-    setPhase(Phase.REPOSITORY)
-  }
-
-  const handleSelectRepository = (repository: SelectRepository) => {
-    setRepository(repository)
-    setPhase(Phase.BRANCH)
+    if (nameSuggestion) {
+      onChange({
+        name: nameSuggestion,
+        parent: branch?.id
+      })
+    }
   }
 
   const handleSelectBranch = (event: SyntheticEvent, value: SelectBranch | null) => {
     setBranch(value)
-    onChange({
-      id: value?.id
-    })
+    onChange(value?.id || null)
   }
 
   const handleChangeName = (event: ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value)
     onChange({
-      create: {
-        name: event.target.value,
-        parent: branch?.id,
-        repository: repository?.id || ''
-      }
+      name: event.target.value,
+      parent: branch?.id
     })
   }
 
   const handleSelectParent = (event: SyntheticEvent, value: SelectBranch | null) => {
     setBranch(value)
     onChange({
-      create: {
-        name,
-        parent: value?.id || '',
-        repository: repository?.id || ''
-      }
+      name: name,
+      parent: value?.id
     })
   }
 
-  const handleClear = () => {
-    setRepository(null)
+  const handleBackToSelect = () => {
+    setMode(Mode.SELECT)
     setBranch(null)
-    setMode(null)
-    setPhase(Phase.BEGIN)
-    onChange(null)
   }
 
-  const renderBegin = () => (
-    <>
-      <Button
-        variant="contained"
-        onClick={handleSelect}
-      >
-        Select
-      </Button>
-      <Button
-        variant="contained"
-        onClick={handleCreate}
-      >
-        Create
-      </Button>
-    </>
-  )
-
-  const renderSelectRepository = () => (
-    <>
-      {repositoryApi.data.map((repository, index) => (
-        <Button
-          key={index}
-          color="inherit"
-          onClick={() => handleSelectRepository(repository)}
-        >
-          {repository.name}
-        </Button>
-      ))}
-      <IconButton size="small" onClick={handleClear}>
-        <CloseIcon />
-      </IconButton>
-    </>
-  )
-
   const renderSelectBranch = () => (
-    <>
-      <Button
-        color="inherit"
-        onClick={handleSelect}
-      >
-        {repository?.name}
-      </Button>
-      <Typography paddingRight={1}>/</Typography>
-      <Autocomplete
-        options={branchApi.data.filter((branch) => !repository || branch.repository === repository?.id)}
-        renderInput={(props) => <TextField label="Branch" {...props} />}
-        value={branch}
-        onChange={handleSelectBranch}
-        getOptionLabel={(option) => option.name}
-        sx={{ minWidth: 200}}
-      />
-      <IconButton size="small" onClick={handleClear}>
-        <CloseIcon />
-      </IconButton>
-    </>
+    <Autocomplete
+      options={branchApi.data}
+      renderInput={(props) => (
+        <TextField
+          label={label || "Branch"}
+          {...props}
+          InputProps={{
+            ...props.InputProps,
+            endAdornment: (
+              <>
+                <IconButton
+                  size="small"
+                  sx={{padding: '2px'}}
+                  onClick={handleCreate}
+                >
+                  <Add />
+                </IconButton>
+                {props.InputProps.endAdornment}
+              </>
+            )
+          }}
+        />
+      )}
+      value={branch}
+      onChange={handleSelectBranch}
+      getOptionLabel={(option) => option.name}
+      sx={{ minWidth: 200}}
+    />
   )
 
   const renderCreateBranch = () => (
-    <>
-      <Button
-        color="inherit"
-        onClick={handleCreate}
-      >
-        {repository?.name}
-      </Button>
-      <Typography paddingRight={1}>/</Typography>
+    <Stack direction="row" gap={1} alignItems="center">
       <TextField
         label="Name"
         value={name}
@@ -220,27 +138,23 @@ export function BranchField({
       />
       <LinkIcon />
       <Autocomplete
-        options={branchApi.data.filter((branch) => !repository || branch.repository === repository?.id)}
+        options={branchApi.data.filter((branch) => !repository || branch.repository === repository)}
         renderInput={(props) => <TextField label="Parent" {...props} />}
         value={branch}
         onChange={handleSelectParent}
         getOptionLabel={(option) => option.name}
-        sx={{ minWidth: 200}}
+        sx={{ minWidth: 200, flexGrow: 1 }}
       />
-      <IconButton
-        size="small"
-        onClick={handleClear}
-      >
+      <IconButton size="small" onClick={handleBackToSelect}>
         <CloseIcon />
       </IconButton>
-    </>
+    </Stack>
   )
 
-  return <Stack minHeight={56} direction="row" gap={1} alignItems="center">
-    {(repositoryApi.loading || branchApi.loading) && <Skeleton height="48px" width="100%"/>}
-    {phase === Phase.BEGIN && renderBegin()}
-    {phase === Phase.REPOSITORY && renderSelectRepository()}
-    {phase === Phase.BRANCH && mode === Mode.SELECT && renderSelectBranch()}
-    {phase === Phase.BRANCH && mode === Mode.CREATE && renderCreateBranch()}
-  </Stack>
+  return (
+    <>
+      {mode === Mode.SELECT && renderSelectBranch()}
+      {mode === Mode.CREATE && renderCreateBranch()}
+    </>
+  )
 }

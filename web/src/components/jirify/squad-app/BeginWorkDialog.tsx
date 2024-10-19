@@ -1,8 +1,8 @@
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from "@mui/material";
+import { Alert, Button, Dialog, DialogActions, DialogContent, Stack, Typography } from "@mui/material";
 import { FormContainer, SwitchElement, useForm } from "react-hook-form-mui";
 import { BranchFieldElement } from "@/components/jirify/common/BranchFieldElement";
 import { SprintTaskRecord, SquadAppJiraIssueStatusEnum, WorkspaceResponse } from "@/lib/jirify/squad-app/types";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useApi } from "@/lib/common/api";
 import { API_URL } from "@/lib/urls";
 import { TaskStatusBadge } from "@/components/jirify/common/TaskStatusBadge";
@@ -10,6 +10,7 @@ import { TaskStatusEnum } from "@/lib/jirify/types";
 import { SquadAppJiraIssueStatusBadge } from "@/components/jirify/squad-app/SquadAppJiraIssueStatusBadge";
 import { ArrowRightAlt } from "@mui/icons-material";
 import { Box } from "@mui/system";
+import { CreateBranch } from "@/components/jirify/common/BranchField";
 
 export interface BeginWorkDialogProps {
   task: SprintTaskRecord | null;
@@ -18,10 +19,10 @@ export interface BeginWorkDialogProps {
   onClose: () => void;
 }
 
-const defaultValues = {
-  sendToJira: false,
-  backend: null,
-  frontend: null,
+interface FieldValues {
+  sendToJira: boolean
+  backend: CreateBranch | string | null
+  frontend: CreateBranch | string | null
 }
 
 export function BeginWorkDialog({
@@ -32,12 +33,13 @@ export function BeginWorkDialog({
 }: BeginWorkDialogProps) {
   const workspaceApi = useApi<WorkspaceResponse>(API_URL.jirify.squadApp.workspace)
   const beginWorkApi = useApi(API_URL.jirify.squadApp.home.beginWork)
-  const form = useForm({ mode: "onBlur", defaultValues })
+  const form = useForm<FieldValues>({ mode: "onBlur", defaultValues: {} })
 
   useEffect(() => {
     if (open) {
-      form.reset(defaultValues)
+      form.reset({})
       workspaceApi.get()
+      beginWorkApi.reset()
     }
   }, [open]);
 
@@ -46,7 +48,11 @@ export function BeginWorkDialog({
     beginWorkApi.post({
       body: {
         taskId: task?.id,
-        ...body
+        sendToJira: body.sendToJira,
+        backend: typeof body.backend === 'string' ? body.backend : null,
+        createBackend: typeof body.backend === 'object' ? body.backend : null,
+        frontend: typeof body.frontend === 'string' ? body.frontend : null,
+        createFrontend: typeof body.frontend === 'object' ? body.frontend : null
       }
     }).then(() => {
       onComplete()
@@ -83,8 +89,24 @@ export function BeginWorkDialog({
             )}
           </Stack>
           <Stack gap={2} marginTop={4}>
-            <BranchFieldElement workspace={workspaceApi.data.id} name="backend" />
-            <BranchFieldElement workspace={workspaceApi.data.id} name="frontend" />
+            {workspaceApi.data.backendRepository && (
+              <BranchFieldElement
+                workspace={workspaceApi.data.id}
+                repository={workspaceApi.data.backendRepository.id}
+                name="backend"
+                label="Backend"
+                nameSuggestion={task?.key}
+              />
+            )}
+            {workspaceApi.data.frontendRepository && (
+              <BranchFieldElement
+                workspace={workspaceApi.data.id}
+                repository={workspaceApi.data.frontendRepository.id}
+                name="frontend"
+                label="Frontend"
+                nameSuggestion={task?.key}
+              />
+            )}
           </Stack>
         </Stack>
       </DialogContent>

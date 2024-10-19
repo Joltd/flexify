@@ -1,24 +1,18 @@
 package com.evgenltd.flexify.microapp.jirify.squadapp.service
 
 import com.evgenltd.flexify.common.ApplicationException
-import com.evgenltd.flexify.microapp.jirify.common.entity.SprintTask
-import com.evgenltd.flexify.microapp.jirify.common.entity.TaskStatus
-import com.evgenltd.flexify.microapp.jirify.common.entity.Workspace
-import com.evgenltd.flexify.microapp.jirify.common.entity.WorkspaceKind
-import com.evgenltd.flexify.microapp.jirify.common.repository.SprintRepository
-import com.evgenltd.flexify.microapp.jirify.common.repository.TaskRepository
-import com.evgenltd.flexify.microapp.jirify.common.repository.WorkspaceRepository
-import com.evgenltd.flexify.microapp.jirify.common.repository.task
+import com.evgenltd.flexify.common.emptyUuid
+import com.evgenltd.flexify.microapp.jirify.common.entity.*
+import com.evgenltd.flexify.microapp.jirify.common.repository.*
 import com.evgenltd.flexify.microapp.jirify.common.service.TaskBranchRelationService
-import com.evgenltd.flexify.microapp.jirify.squadapp.entity.properties
-import com.evgenltd.flexify.microapp.jirify.squadapp.record.ActiveSprintResponse
-import com.evgenltd.flexify.microapp.jirify.squadapp.record.BeginWorkRequest
-import com.evgenltd.flexify.microapp.jirify.squadapp.record.SprintTaskGroup
-import com.evgenltd.flexify.microapp.jirify.squadapp.record.SprintTaskRecord
+import com.evgenltd.flexify.microapp.jirify.common.service.integration.jira.JiraIntegrationFactory
+import com.evgenltd.flexify.microapp.jirify.squadapp.entity.*
+import com.evgenltd.flexify.microapp.jirify.squadapp.record.*
 import com.evgenltd.flexify.user.entity.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+import java.util.UUID
 
 @Service
 class HomeService(
@@ -26,10 +20,11 @@ class HomeService(
     private val sprintRepository: SprintRepository,
     private val taskRepository: TaskRepository,
     private val taskBranchRelationService: TaskBranchRelationService,
+    private val jiraIntegrationFactory: JiraIntegrationFactory,
 ) {
 
     @Transactional
-    fun activeSprint(user: User): ActiveSprintResponse {
+    fun activeSprint(user: User, request: ActiveSprintRequest): ActiveSprintResponse {
         val workspace = workspace(user)
 
         val sprint = workspace.sprints
@@ -38,42 +33,71 @@ class HomeService(
             .firstOrNull()
             ?: throw ApplicationException("Active sprint not found")
 
+        val employees = request.employees?.map { if (it == emptyUuid) null else it } ?: emptyList()
+        val areas = request.areas ?: emptyList()
+
         return ActiveSprintResponse(
             id = sprint.id!!,
             key = sprint.key,
             updatedAt = sprint.updatedAt,
+            workspace = workspace.id!!,
             groups = sprint.sprintTasks
-                .filter { it.task.assignee?.me == true }
+                .asSequence()
+                .filter { employees.isEmpty() || it.task.assignee?.id in employees }
+                .filter { areas.isEmpty()
+                        || (it.task.properties().backend && DevelopmentArea.BACKEND in areas)
+                        || (it.task.properties().frontend && DevelopmentArea.FRONTEND in areas) }
+                .filter { request.performed != true || it.performed }
                 .groupBy { it.task.status }
                 .map { it.toGroup() }
                 .sortedBy { it.status.ordinal }
         )
     }
 
+    fun beginWorkJira(appUser: User, request: BeginWorkRequest) {
+        val workspace = workspaceRepository.workspace(appUser, WorkspaceKind.SQUAD_APP)
+        val task = taskRepository.task(appUser, request.taskId)
+        val me = workspace.employees.find { it.me }
+
+        val ( host, user, token, board ) = workspace.properties().jira
+        val jiraIntegration = jiraIntegrationFactory.create(host, user, token, board)
+
+        if (task.assignee == null && me != null) {
+            jiraIntegration.issueSetAssignee(task.key, me.externalId)
+        }
+
+        if (request.sendToJira) {
+            jiraIntegration.issueTransitionByName(task.key, JiraIssueStatus.IN_PROGRESS.value)
+        }
+    }
+
     @Transactional
     fun beginWork(user: User, request: BeginWorkRequest) {
+        val workspace = workspaceRepository.workspace(user, WorkspaceKind.SQUAD_APP)
         val task = taskRepository.task(user, request.taskId)
 
-        // send to jira
-
+        task.assignee = workspace.employees.find { it.me }
         task.status = TaskStatus.IN_PROGRESS
         task.updatedAt = LocalDateTime.now()
 
-        request.backend?.let {
-            if (it.id != null) {
-                taskBranchRelationService.linkToBranch(user, task, it.id)
-            } else if (it.create != null) {
-                taskBranchRelationService.linkToNewBranch(user, task, it.create.name, it.create.parent, it.create.repository)
-            }
-        }
-        request.frontend?.let {
-            if (it.id != null) {
-                taskBranchRelationService.linkToBranch(user, task, it.id)
-            } else if (it.create != null) {
-                taskBranchRelationService.linkToNewBranch(user, task, it.create.name, it.create.parent, it.create.repository)
-            }
-        }
+        linkToBranch(user, workspace, DevelopmentArea.BACKEND, task, request.backend, request.createBackend)
+        linkToBranch(user, workspace, DevelopmentArea.FRONTEND, task, request.frontend, request.createFrontend)
 
+        workspace.sprints
+            .filter { it.active }
+            .flatMap { it.sprintTasks }
+            .filter { it.task.id == task.id }
+            .onEach { it.performed = true }
+    }
+
+    private fun linkToBranch(user: User, workspace: Workspace, area: DevelopmentArea, task: Task, id: UUID?, createBranch: CreateBranchRecord?) {
+        if (id != null) {
+            taskBranchRelationService.linkToBranch(user, task, id)
+        } else if (createBranch != null) {
+            val repository = workspace.repositoryByType(area)
+            val branch = taskBranchRelationService.linkToNewBranch(user, task, createBranch.name, createBranch.parent, repository.id!!)
+            branch.properties = BranchProperties(BranchKind.PROD)
+        }
     }
 
     private fun Map.Entry<TaskStatus, List<SprintTask>>.toGroup(): SprintTaskGroup = SprintTaskGroup(
@@ -90,6 +114,8 @@ class HomeService(
         url = task.url,
         status = task.status,
         externalStatus = externalStatus,
+        assignee = task.assignee?.let { AssigneeRecord(it.id!!, it.name) },
+        performed = performed,
         estimation = estimation,
         priority = task.priority,
         backend = task.properties().backend,

@@ -27,6 +27,9 @@ data class Workspace(
     var user: User,
 
     @OneToMany(mappedBy = "workspace")
+    var employees: List<Employee> = emptyList(),
+
+    @OneToMany(mappedBy = "workspace")
     var sprints: List<Sprint> = emptyList(),
 
     @OneToMany(mappedBy = "workspace")

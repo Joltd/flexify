@@ -1,9 +1,7 @@
 package com.evgenltd.flexify.microapp.jirify.squadapp.controller
 
 import com.evgenltd.flexify.microapp.jirify.JirifyAppSecured
-import com.evgenltd.flexify.microapp.jirify.squadapp.record.BranchRecord
-import com.evgenltd.flexify.microapp.jirify.squadapp.record.CreateMergeRequestRequest
-import com.evgenltd.flexify.microapp.jirify.squadapp.record.MergeRequestResponse
+import com.evgenltd.flexify.microapp.jirify.squadapp.record.*
 import com.evgenltd.flexify.microapp.jirify.squadapp.service.BranchService
 import com.evgenltd.flexify.user.service.UserService
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -24,10 +22,11 @@ class BranchController(
     @GetMapping("/api/app/jirify/squad-app/branch")
     @JirifyAppSecured
     fun list(
-        @RequestParam(name = "repository") repository: UUID
+        @RequestParam repository: UUID,
+        @RequestParam(required = false) readyToProd: Boolean?,
     ): List<BranchRecord> {
         val user = userService.getCurrentUserNotNull()
-        return branchService.list(user, repository)
+        return branchService.list(user, repository, readyToProd)
     }
 
     @GetMapping("/api/app/jirify/squad-app/branch/base")
@@ -37,6 +36,15 @@ class BranchController(
     ): List<BranchRecord> {
         val user = userService.getCurrentUserNotNull()
         return branchService.baseBranches(user, repository)
+    }
+
+    @GetMapping("/api/app/jirify/squad-app/branch/{id}/analysis")
+    @JirifyAppSecured
+    fun analysis(
+        @PathVariable id: UUID
+    ): List<BranchAnalysisRecord> {
+        val user = userService.getCurrentUserNotNull()
+        return branchService.analysis(user, id)
     }
 
     @GetMapping("/api/app/jirify/squad-app/branch/merge-request")

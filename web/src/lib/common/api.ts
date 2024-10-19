@@ -3,9 +3,9 @@ import { useRouter } from "next/navigation";
 
 export interface ApiOptions {
   body?: any,
-  headers?: { [key: string]: string },
-  pathParams?: { [key: string]: string },
-  queryParams?: { [key: string]: string }
+  headers?: { [key: string]: any },
+  pathParams?: { [key: string]: any },
+  queryParams?: { [key: string]: any }
 }
 
 export function useApi<T>(path: string, defaultData?: T) {
@@ -27,7 +27,10 @@ export function useApi<T>(path: string, defaultData?: T) {
     }
 
     if (options?.queryParams) {
-      const params = new URLSearchParams(options?.queryParams)
+      Object.keys(options.queryParams)
+        .filter(key => !options.queryParams?.[key])
+        .forEach(key => delete options.queryParams?.[key])
+      const params = new URLSearchParams(options.queryParams)
       actualPath = `${actualPath}?${params}`
     }
 

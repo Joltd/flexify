@@ -38,6 +38,7 @@ export const API_URL = {
       branch: {
         list: '/api/app/jirify/squad-app/branch',
         base: '/api/app/jirify/squad-app/branch/base',
+        analysis: '/api/app/jirify/squad-app/branch/:id/analysis',
         mergeRequest: '/api/app/jirify/squad-app/branch/merge-request',
         mergeRequestId: '/api/app/jirify/squad-app/branch/merge-request/:id',
       },

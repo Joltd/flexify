@@ -7,7 +7,7 @@ import com.evgenltd.flexify.user.service.UserService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
-@RestController
+@RestController("squadAppTaskController")
 class TaskController(
     private val userService: UserService,
     private val taskService: TaskService,

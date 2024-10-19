@@ -48,23 +48,24 @@ export enum DevelopmentArea {
 }
 
 export interface SelectRepository {
-  id: string;
-  name: string;
+  id: string
+  name: string
 }
 
 export interface SelectBranch {
-  id: string;
-  name: string;
-  repository: string;
+  id: string
+  name: string
+  repository: string
 }
 
 export interface SelectEmployee {
-  id: string;
-  name: string;
+  id: string
+  name: string
+  me: boolean
 }
 
 export interface SelectTask {
-  id: string;
-  key: string;
-  summary: string;
+  id: string
+  key: string
+  summary: string
 }

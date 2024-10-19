@@ -23,14 +23,14 @@ class TaskSyncService(
 ) {
 
     fun prepareJiraIntegration(appUser: User): JiraIntegration {
-        val ( host, user, token, board ) = getWorkspace(appUser)
+        val ( host, user, token, board ) = workspaceRepository.workspace(appUser, WorkspaceKind.SQUAD_APP)
             .properties()
             .jira
         return jiraIntegrationFactory.create(host, user, token, board)
     }
 
     fun syncSprint(user: User, activeJiraSprint: JiraSprint, jiraIssues: List<JiraIssue>) {
-        val workspace = getWorkspace(user)
+        val workspace = workspaceRepository.workspace(user, WorkspaceKind.SQUAD_APP)
         val host = workspace.properties().jira.host
 
         val activeSprint = sprintRepository.findByExternalId(activeJiraSprint.id.toString())
@@ -144,11 +144,6 @@ class TaskSyncService(
         sprintTask.externalStatus = jiraIssue.fields.status?.name
         sprintTask.estimation = jiraIssue.fields.timeEstimate
         sprintTask.updatedAt = LocalDateTime.now()
-    }
-
-    private fun getWorkspace(user: User): Workspace {
-        return workspaceRepository.findByUserAndKind(user, WorkspaceKind.SQUAD_APP)
-            ?: throw ApplicationException("Workspace not found")
     }
 
     private companion object {

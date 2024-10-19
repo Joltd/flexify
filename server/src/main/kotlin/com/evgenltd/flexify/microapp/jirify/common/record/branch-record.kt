@@ -8,17 +8,6 @@ data class SelectBranchRecord(
     val repository: UUID,
 )
 
-data class ChooseBranchRecord(
-    val id: UUID?,
-    val create: CreateBranch?,
-)
-
-data class CreateBranch(
-    val name: String,
-    val parent: UUID?,
-    val repository: UUID,
-)
-
 data class CreateBranchRequest(
     val workspace: UUID,
     val name: String,
