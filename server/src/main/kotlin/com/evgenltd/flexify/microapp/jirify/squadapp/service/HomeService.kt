@@ -67,7 +67,8 @@ class HomeService(
 
     fun beginWorkJira(appUser: User, request: BeginWorkRequest) {
         val workspace = workspaceRepository.workspace(appUser, WorkspaceKind.SQUAD_APP)
-        val task = taskRepository.task(appUser, request.taskId)
+        val sprintTask = sprintTaskRepository.task(appUser, request.taskId)
+        val task = sprintTask.task
         val me = workspace.employees.find { it.me }
 
         val ( host, user, token, board ) = workspace.properties().jira
@@ -85,7 +86,8 @@ class HomeService(
     @Transactional
     fun beginWork(user: User, request: BeginWorkRequest) {
         val workspace = workspaceRepository.workspace(user, WorkspaceKind.SQUAD_APP)
-        val task = taskRepository.task(user, request.taskId)
+        val sprintTask = sprintTaskRepository.task(user, request.taskId)
+        val task = sprintTask.task
 
         task.assignee = workspace.employees.find { it.me }
         task.status = TaskStatus.IN_PROGRESS
