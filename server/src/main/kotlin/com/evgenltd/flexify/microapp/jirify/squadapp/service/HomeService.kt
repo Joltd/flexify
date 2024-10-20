@@ -19,13 +19,14 @@ class HomeService(
     private val workspaceRepository: WorkspaceRepository,
     private val sprintRepository: SprintRepository,
     private val taskRepository: TaskRepository,
+    private val sprintTaskRepository: SprintTaskRepository,
     private val taskBranchRelationService: TaskBranchRelationService,
     private val jiraIntegrationFactory: JiraIntegrationFactory,
 ) {
 
     @Transactional
     fun activeSprint(user: User, request: ActiveSprintRequest): ActiveSprintResponse {
-        val workspace = workspace(user)
+        val workspace = workspaceRepository.workspace(user, WorkspaceKind.SQUAD_APP)
 
         val sprint = workspace.sprints
             .filter { it.active }
@@ -52,6 +53,16 @@ class HomeService(
                 .map { it.toGroup() }
                 .sortedBy { it.status.ordinal }
         )
+    }
+
+    @Transactional
+    fun updateTask(user: User, request: UpdateTaskRequest) {
+        val sprintTask = sprintTaskRepository.task(user, request.taskId)
+
+        sprintTask.task.status = request.status
+        sprintTask.task.updatedAt = LocalDateTime.now()
+        sprintTask.performed = request.performed
+        sprintTask.updatedAt = LocalDateTime.now()
     }
 
     fun beginWorkJira(appUser: User, request: BeginWorkRequest) {
@@ -108,7 +119,7 @@ class HomeService(
     )
 
     private fun SprintTask.toRecord() = SprintTaskRecord(
-        id = task.id!!,
+        id = id!!,
         key = task.key,
         summary = task.summary,
         url = task.url,
@@ -121,8 +132,5 @@ class HomeService(
         backend = task.properties().backend,
         frontend = task.properties().frontend,
     )
-
-    private fun workspace(user: User): Workspace = workspaceRepository.findByUserAndKind(user, WorkspaceKind.SQUAD_APP)
-        ?: throw ApplicationException("Workspace not found")
 
 }

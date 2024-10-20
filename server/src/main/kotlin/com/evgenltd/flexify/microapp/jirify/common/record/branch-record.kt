@@ -9,7 +9,13 @@ data class SelectBranchRecord(
 )
 
 data class CreateBranchRequest(
-    val workspace: UUID,
+    val name: String,
+    val parent: UUID?,
+    val repository: UUID,
+)
+
+data class UpdateBranchRequest(
+    val id: UUID,
     val name: String,
     val parent: UUID?,
     val repository: UUID,

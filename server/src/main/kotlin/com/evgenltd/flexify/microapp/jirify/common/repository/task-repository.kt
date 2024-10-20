@@ -5,6 +5,7 @@ import com.evgenltd.flexify.microapp.jirify.common.entity.Task
 import com.evgenltd.flexify.microapp.jirify.common.entity.Workspace
 import com.evgenltd.flexify.user.entity.User
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Repository
 import java.util.UUID
 
@@ -18,7 +19,7 @@ interface TaskRepository : JpaRepository<Task, UUID> {
 }
 
 fun TaskRepository.task(user: User, id: UUID): Task {
-    val task = findById(id).orElse(null)
+    val task = findByIdOrNull(id)
         ?: throw ApplicationException("Task not found")
 
     if (task.workspace.user.id != user.id) {

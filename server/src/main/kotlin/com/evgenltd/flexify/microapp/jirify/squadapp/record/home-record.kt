@@ -49,6 +49,12 @@ data class CreateBranchRecord(
     val parent: UUID?,
 )
 
+data class UpdateTaskRequest(
+    val taskId: UUID,
+    val status: TaskStatus,
+    val performed: Boolean,
+)
+
 data class BeginWorkRequest(
     val taskId: UUID,
     val sendToJira: Boolean,

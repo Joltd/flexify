@@ -4,6 +4,8 @@ import com.evgenltd.flexify.common.ApplicationException
 import com.evgenltd.flexify.microapp.jirify.common.entity.Branch
 import com.evgenltd.flexify.microapp.jirify.common.record.SelectBranchRecord
 import com.evgenltd.flexify.microapp.jirify.common.repository.*
+import com.evgenltd.flexify.microapp.jirify.squadapp.entity.BranchKind
+import com.evgenltd.flexify.microapp.jirify.squadapp.entity.BranchProperties
 import com.evgenltd.flexify.user.entity.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -41,6 +43,7 @@ class BranchService(
             name = name,
             repository = repository,
             parent = parent,
+            properties = BranchProperties(BranchKind.PROD) // todo should be removed from here
         )
         return branchRepository.save(branch)
     }

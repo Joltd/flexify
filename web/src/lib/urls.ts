@@ -22,12 +22,17 @@ export const API_URL = {
       },
       branch: {
         select: '/api/app/jirify/branch/select',
+        root: '/api/app/jirify/branch',
+        id: '/api/app/jirify/branch/:id',
       },
       employee: {
         select: '/api/app/jirify/employee/select',
       },
       task: {
         select: '/api/app/jirify/task/select',
+      },
+      sprintTask: {
+        id: '/api/app/jirify/sprint-task/:id',
       }
     },
     squadApp: {

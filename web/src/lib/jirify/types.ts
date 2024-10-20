@@ -69,3 +69,15 @@ export interface SelectTask {
   key: string
   summary: string
 }
+
+export interface EditSprintTask {
+  id: string
+  status: TaskStatusEnum
+  performed: boolean
+}
+
+export interface EditBranch {
+  repository: string
+  name: string
+  parent: string
+}

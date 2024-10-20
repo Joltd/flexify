@@ -1,6 +1,6 @@
 'use client'
 import {
-  Alert, FormControlLabel,
+  Alert, Fab, FormControlLabel,
   Grid2,
   IconButton,
   Menu, MenuItem,
@@ -15,11 +15,12 @@ import { API_URL } from "@/lib/urls";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { BranchRecord, RepositoryRecord, WorkspaceResponse } from "@/lib/jirify/squad-app/types";
 import { ListSkeleton } from "@/components/common/skeleton/ListSkeleton";
-import { CheckCircle, Error, MoreVert } from "@mui/icons-material";
+import { Add, CheckCircle, Error, MoreVert } from "@mui/icons-material";
 import { useMenu } from "@/lib/common/menu";
 import { useDialog } from "@/lib/common/dialog";
-import { MergeRequestDialog } from "@/components/jirify/squad-app/MergeRequestDialog";
+import { MergeRequestDialog } from "@/fragments/jirify/squad-app/MergeRequestDialog";
 import { BranchRelationAnalysis, useBranchRelationAnalysis } from "@/fragments/jirify/squad-app/BranchRelationAnalysis";
+import { EditBranchDialog } from "@/fragments/jirify/EditBranchDialog";
 
 export default function Page() {
   const workspaceApi = useApi<WorkspaceResponse>(API_URL.jirify.squadApp.workspace)
@@ -30,6 +31,15 @@ export default function Page() {
   const menu = useMenu()
   const branchAnalysis = useBranchRelationAnalysis()
   const sendToReviewDialog = useDialog()
+  const editBranchDialog = useDialog()
+
+  const getBranches = () => {
+    if (repository) {
+      branchesApi.get({
+        queryParams: { repository: repository.id, readyToProd }
+      })
+    }
+  }
 
   useEffect(() => {
     workspaceApi.get()
@@ -42,11 +52,7 @@ export default function Page() {
   }, [workspaceApi.data]);
 
   useEffect(() => {
-    if (repository) {
-      branchesApi.get({
-        queryParams: { repository: repository.id, readyToProd }
-      })
-    }
+    getBranches()
   }, [repository, readyToProd]);
 
   const handleChangeRepository = (event: any, value: RepositoryRecord) => {
@@ -58,6 +64,16 @@ export default function Page() {
     menu.open(event)
   }
 
+  const handleOpenBranchAdd = () => {
+    setBranch(null)
+    editBranchDialog.open()
+  }
+
+  const handleOpenBranchEdit = () => {
+    menu.close()
+    editBranchDialog.open()
+  }
+
   const handleOpenBranchAnalysis = () => {
     menu.close()
     branchAnalysis.open(branch)
@@ -66,14 +82,6 @@ export default function Page() {
   const handleOpenMergeRequest = () => {
     menu.close()
     sendToReviewDialog.open()
-  }
-
-  const handleMergeRequestComplete = () => {
-    if (repository) {
-      branchesApi.get({
-        queryParams: { repository: repository.id }
-      })
-    }
   }
 
   return <Grid2 container margin={4} spacing={2}>
@@ -88,7 +96,7 @@ export default function Page() {
         />}
         label="Ready to prod" />
     </Grid2>
-    <Grid2 size={branchAnalysis.branch ? 4 : 12} display="flex" flexDirection="column">
+    <Grid2 size={branchAnalysis.branch ? 4 : 12} display="flex" flexDirection="column" position="relative">
       {workspaceApi.loading || branchesApi.loading ? (
         <ListSkeleton />
       ) : workspaceApi.error ? (
@@ -121,6 +129,9 @@ export default function Page() {
           ))}
         </>
       )}
+      <Fab color="primary" onClick={handleOpenBranchAdd} sx={{ position: 'sticky', bottom: 24, right: 24 }}>
+        <Add />
+      </Fab>
     </Grid2>
     {branch && branchAnalysis.branch && (
       <Grid2 size={8}>
@@ -131,15 +142,22 @@ export default function Page() {
       <MergeRequestDialog
         repository={repository}
         sourceBranch={branch}
-        onComplete={handleMergeRequestComplete}
+        onComplete={getBranches}
         {...sendToReviewDialog.props}
       />
     )}
+    <EditBranchDialog
+      id={branch?.id || null}
+      workspace={workspaceApi.data.id}
+      onComplete={getBranches}
+      {...editBranchDialog.props}
+    />
     <Menu
       anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       transformOrigin={{ horizontal: 'right', vertical: 'top' }}
       {...menu.props}
     >
+      <MenuItem onClick={handleOpenBranchEdit}>Edit</MenuItem>
       <MenuItem onClick={handleOpenBranchAnalysis}>View</MenuItem>
       <MenuItem onClick={handleOpenMergeRequest}>Merge request</MenuItem>
     </Menu>

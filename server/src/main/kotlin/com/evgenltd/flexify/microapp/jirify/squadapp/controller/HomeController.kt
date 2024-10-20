@@ -4,6 +4,7 @@ import com.evgenltd.flexify.microapp.jirify.JirifyAppSecured
 import com.evgenltd.flexify.microapp.jirify.squadapp.record.ActiveSprintRequest
 import com.evgenltd.flexify.microapp.jirify.squadapp.record.ActiveSprintResponse
 import com.evgenltd.flexify.microapp.jirify.squadapp.record.BeginWorkRequest
+import com.evgenltd.flexify.microapp.jirify.squadapp.record.UpdateTaskRequest
 import com.evgenltd.flexify.microapp.jirify.squadapp.service.HomeService
 import com.evgenltd.flexify.user.service.UserService
 import org.springframework.web.bind.annotation.GetMapping
@@ -26,6 +27,15 @@ class HomeController(
     ): ActiveSprintResponse {
         val user = userService.getCurrentUserNotNull()
         return homeService.activeSprint(user, request)
+    }
+
+    @PostMapping("/api/app/jirify/squad-app/home/task")
+    @JirifyAppSecured
+    fun updateTask(
+        @RequestBody request: UpdateTaskRequest,
+    ) {
+        val user = userService.getCurrentUserNotNull()
+        homeService.updateTask(user, request)
     }
 
     @PostMapping("/api/app/jirify/squad-app/home/begin-work")

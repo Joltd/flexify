@@ -6,7 +6,7 @@ export interface SelectBranchElementProps {
   workspace: string
   repository: string
   name: string
-  label: string
+  label?: string
   nameSuggestion?: string
 }
 
@@ -14,7 +14,7 @@ export function BranchFieldElement({
   workspace,
   repository,
   name,
-  label,
+  label = "Branch",
   nameSuggestion,
 }: SelectBranchElementProps) {
   return <Controller

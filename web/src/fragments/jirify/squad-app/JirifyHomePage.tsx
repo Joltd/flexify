@@ -19,13 +19,14 @@ import { TaskStatusBadge } from "@/components/jirify/common/TaskStatusBadge";
 import { PriorityBadge } from "@/components/jirify/common/PriorityBadge";
 import { ContentCopy, Done, MoreVert, OpenInNew } from "@mui/icons-material";
 import { EstimationBadge } from "@/components/jirify/common/EstimationBadge";
-import { BeginWorkDialog } from "@/components/jirify/squad-app/BeginWorkDialog";
+import { BeginWorkDialog } from "@/fragments/jirify/squad-app/BeginWorkDialog";
 import { useMenu } from "@/lib/common/menu";
 import { ListSkeleton } from "@/components/common/skeleton/ListSkeleton";
 import { useDialog } from "@/lib/common/dialog";
 import { EmployeeMultiField } from "@/components/jirify/common/EmployeeMultiField";
 import { useSnackbar } from "@/lib/common/snackbar";
 import { DevelopmentArea } from "@/lib/jirify/types";
+import { EditSprintTaskDialog } from "@/fragments/jirify/EditSprintTaskDialog";
 
 export function JirifyHomePage() {
   const sprint = useApi<ActiveSprintResponse>(API_URL.jirify.squadApp.home.activeSprint)
@@ -37,6 +38,7 @@ export function JirifyHomePage() {
 
   const [task, setTask] = useState<SprintTaskRecord | null>(null)
   const menu = useMenu()
+  const editTaskDialog = useDialog()
   const beginWorkDialog = useDialog()
   const snackbar = useSnackbar()
 
@@ -73,13 +75,14 @@ export function JirifyHomePage() {
     menu.open(event)
   }
 
+  const handleEditTask = () => {
+    menu.close()
+    editTaskDialog.open()
+  }
+
   const handleOpenBeginWork = () => {
     menu.close()
     beginWorkDialog.open()
-  }
-
-  const handleBeginWorkComplete = () => {
-    getSprint()
   }
 
   const totalEstimation = sprint.data
@@ -182,9 +185,16 @@ export function JirifyHomePage() {
         )}
       </Grid2>
     </Grid2>
+    {task && (
+      <EditSprintTaskDialog
+        id={task?.id}
+        onComplete={getSprint}
+        {...editTaskDialog.props}
+      />
+    )}
     <BeginWorkDialog
       task={task}
-      onComplete={handleBeginWorkComplete}
+      onComplete={getSprint}
       {...beginWorkDialog.props}
     />
     <Menu
@@ -192,6 +202,7 @@ export function JirifyHomePage() {
       transformOrigin={{ horizontal: 'right', vertical: 'top' }}
       {...menu.props}
     >
+      <MenuItem onClick={handleEditTask}>Edit</MenuItem>
       <MenuItem onClick={handleOpenBeginWork}>Begin work</MenuItem>
     </Menu>
     <Snackbar {...snackbar.props} />
