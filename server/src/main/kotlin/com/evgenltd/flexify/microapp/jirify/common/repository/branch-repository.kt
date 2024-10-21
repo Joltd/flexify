@@ -9,11 +9,7 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-interface BranchRepository : JpaRepository<Branch, UUID> {
-
-    fun findByName(name: String): Branch?
-
-}
+interface BranchRepository : JpaRepository<Branch, UUID>
 
 fun BranchRepository.branch(user: User, id: UUID): Branch {
     val branch = findByIdOrNull(id)

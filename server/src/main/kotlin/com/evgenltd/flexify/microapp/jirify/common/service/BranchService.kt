@@ -30,10 +30,11 @@ class BranchService(
     fun create(user: User, name: String, parentId: UUID?, repositoryId: UUID): Branch {
         val repository = repositoryRepository.repository(user, repositoryId)
 
-        val existedBranch = branchRepository.findByName(name)
-        if (existedBranch != null) {
-            throw ApplicationException("Branch already exists")
-        }
+        repository.branches
+            .find { it.name == name }
+            ?.let {
+                throw ApplicationException("Branch already exists")
+            }
 
         val parent = parentId?.let {
             repository.branch(parentId) ?: throw ApplicationException("Parent branch not found")
