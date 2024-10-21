@@ -30,7 +30,8 @@ class TaskBranchRelationService(
     }
 
     private fun linkToBranch(task: Task, branch: Branch) {
-        val linkedBranches = task.branches.filter { it.id == branch.id || it.name == branch.name }
+        val linkedBranches = task.branches
+            .filter { it.id == branch.id }
         if (linkedBranches.isNotEmpty()) {
             throw ApplicationException("Task already linked to branch")
         }
