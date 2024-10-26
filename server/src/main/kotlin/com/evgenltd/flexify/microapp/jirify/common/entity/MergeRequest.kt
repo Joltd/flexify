@@ -14,6 +14,12 @@ data class MergeRequest(
 
     var externalId: String,
 
+    var url: String,
+
+    var externalStatus: String,
+
+    var hidden: Boolean = false,
+
     @ManyToOne
     var sourceBranch: Branch,
 

@@ -1,4 +1,4 @@
-import { DevelopmentArea, JiraIssueStatusColor, SelectRepository, TaskStatusEnum } from "@/lib/jirify/types";
+import { DevelopmentArea, JiraIssueStatusColor, TaskStatusEnum } from "@/lib/jirify/common/types";
 
 export enum SquadAppJiraIssueStatusEnum {
   UNKNOWN = 'Unknown',

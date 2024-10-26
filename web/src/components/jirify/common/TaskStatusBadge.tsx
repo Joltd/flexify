@@ -1,5 +1,5 @@
 import { Chip } from "@mui/material";
-import { TaskStatusColor, TaskStatusEnum, TaskStatusLabel } from "@/lib/jirify/types";
+import { TaskStatusColor, TaskStatusEnum, TaskStatusLabel } from "@/lib/jirify/common/types";
 
 export interface TaskStatusBadgeProps {
   status?: TaskStatusEnum;

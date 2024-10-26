@@ -18,6 +18,8 @@ data class Branch(
 
     var base: Boolean = false,
 
+    var hidden: Boolean = false,
+
     @JdbcTypeCode(SqlTypes.JSON)
     var properties: Properties? = null,
 
@@ -32,6 +34,9 @@ data class Branch(
 
     @ManyToMany(mappedBy = "branches")
     var tasks: MutableList<Task> = mutableListOf(),
+
+    @OneToMany(mappedBy = "sourceBranch")
+    var mergeRequests: MutableList<MergeRequest> = mutableListOf(),
 
 ) {
 

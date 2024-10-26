@@ -1,45 +1,39 @@
 import { Autocomplete, TextField } from "@mui/material";
-import { useApi } from "@/lib/common/api";
-import { SelectRepository } from "@/lib/jirify/types";
-import { API_URL } from "@/lib/urls";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useFetchStore } from "@/lib/common/store/fetch-store";
+import { FieldRecord } from "@/lib/common/store/store";
+import { jirifyUrls } from "@/lib/jirify/common/urls";
 
 export interface RepositoryFieldProps {
-  workspace: string;
-  value?: string;
-  onChange: (value: string | null) => void;
+  workspace: string
+  value?: string
+  onChange: (value: string | null) => void
+  label?: string
 }
 
 export function RepositoryField({
   workspace,
   value,
   onChange,
+  label,
 }: RepositoryFieldProps) {
-  const repositoryApi = useApi<SelectRepository[]>(API_URL.jirify.common.repository.select, [])
-  const [repository, setRepository] = useState<SelectRepository | null>(null)
+  const store = useFetchStore<FieldRecord[]>('GET', jirifyUrls.repository.field)
 
   useEffect(() => {
-    repositoryApi.get({
-      queryParams: { workspace }
-    })
-  }, []);
+    if (workspace) {
+      store.fetch({ queryParams: { workspace } })
+    }
+  }, [workspace]);
 
-  useEffect(() => {
-    const repository = repositoryApi.data
-      .find((repository) => repository.id === value) || null
-    setRepository(repository)
-  }, [repositoryApi.data]);
-
-  const handleSelect = (event: any, value: SelectRepository | null) => {
-    setRepository(value)
+  const handleSelect = (event: any, value: FieldRecord | null) => {
     onChange(value?.id || null)
   }
 
   return <Autocomplete
-    options={repositoryApi.data}
-    renderInput={(props) => <TextField label="Repository" {...props} />}
-    value={repository}
+    options={store.data || []}
+    renderInput={(props) => <TextField label={label || "Repository"} {...props} />}
+    value={store.data?.find((repository) => repository.id === value) || null}
     onChange={handleSelect}
-    getOptionLabel={(option) => option.name}
+    getOptionLabel={(option) => option.label}
   />
 }

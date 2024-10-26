@@ -1,50 +1,39 @@
-import { Autocomplete, Avatar, AvatarGroup, TextField } from "@mui/material";
-import { useApi } from "@/lib/common/api";
-import { SelectEmployee } from "@/lib/jirify/types";
-import { API_URL } from "@/lib/urls";
-import { useEffect, useState } from "react";
-import { Person } from "@mui/icons-material";
-import { blue, green } from "@mui/material/colors";
+import { Autocomplete, TextField } from "@mui/material";
+import { useEffect } from "react";
+import { useFetchStore } from "@/lib/common/store/fetch-store";
+import { FieldRecord } from "@/lib/common/store/store";
+import { jirifyUrls } from "@/lib/jirify/common/urls";
 
 export interface EmployeeFieldProps {
-  workspace: string;
-  value?: string;
-  onChange: (value: string | null) => void;
+  workspace: string
+  value?: string
+  onChange: (value: string | null) => void
+  label?: string
 }
 
 export function EmployeeField({
   workspace,
   value,
   onChange,
+  label,
 }: EmployeeFieldProps) {
-  const employeeApi = useApi<SelectEmployee[]>(API_URL.jirify.common.employee.select, [])
-  const [employee, setEmployee] = useState<SelectEmployee | null>(null)
+  const store = useFetchStore<FieldRecord[]>('GET', jirifyUrls.employee.field)
 
   useEffect(() => {
-    if (!workspace) {
-      return
+    if (workspace) {
+      store.fetch({ queryParams: { workspace } })
     }
-    employeeApi.get({
-      queryParams: { workspace }
-    })
-  }, [workspace]);
+  }, [workspace])
 
-  useEffect(() => {
-    const employee = employeeApi.data
-      .find((employee) => employee.id === value) || null
-    setEmployee(employee)
-  }, [employeeApi.data]);
-
-  const handleSelect = (event: any, value: SelectEmployee | null) => {
-    setEmployee(value)
+  const handleSelect = (event: any, value: FieldRecord | null) => {
     onChange(value?.id || null)
   };
 
   return <Autocomplete
-    options={employeeApi.data}
-    renderInput={(props) => <TextField label="Employee" {...props} />}
-    value={employee}
+    options={store.data || []}
+    renderInput={(props) => <TextField label={label || "Employee"} {...props} />}
+    value={store.data?.find((employee) => employee.id === value) || null}
     onChange={handleSelect}
-    getOptionLabel={(option) => option.name}
+    getOptionLabel={(option) => option.label}
   />
 }

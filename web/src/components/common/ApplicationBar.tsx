@@ -5,34 +5,31 @@ import {
   Button,
   IconButton,
   Link,
-  Menu,
-  MenuItem,
-  Stack, ToggleButton,
+  Stack,
   Toolbar,
   Typography,
-  useTheme
 } from "@mui/material";
 import AppsIcon from "@mui/icons-material/Apps";
 import { API_URL, URL } from "@/lib/urls";
 import { useApi } from "@/lib/common/api";
-import { useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 import { useBreakpoints } from "@/lib/common/breakpoints";
 import { UserRecord } from "@/lib/common/types";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DoneIcon from "@mui/icons-material/Done";
 import { Box } from "@mui/system";
-import { usePathname, useSelectedLayoutSegment, useSelectedLayoutSegments } from "next/navigation";
 
 export interface ApplicationBarProps {
-  title?: String;
-  navigationItems?: NavigationItem[];
-  backButton?: string;
-  doneButton?: boolean;
+  title?: String
+  navigationItems?: NavigationItem[]
+  backButton?: string
+  doneButton?: boolean
+  actions?: () => ReactNode
 }
 
 export interface NavigationItem {
-  title: string;
-  url: string;
+  title: string
+  url: string
 }
 
 export function ApplicationBar({
@@ -40,10 +37,10 @@ export function ApplicationBar({
   navigationItems,
   backButton,
   doneButton,
+  actions,
 }: ApplicationBarProps) {
   const { isExtraSmall } = useBreakpoints()
   const { get, data } = useApi<UserRecord>(API_URL.user.me)
-  const path = usePathname()
 
   useEffect(() => {
     get()
@@ -124,7 +121,12 @@ export function ApplicationBar({
     <Toolbar sx={{ gap: 2 }} disableGutters>
       {backButton ? renderBackButton() : renderAppButton()}
       {navigationItems ? renderNavigation() : renderTitle()}
-      {doneButton ? renderDoneButton() : renderUserInfo()}
+      {doneButton ? renderDoneButton() : (
+        <>
+          {actions?.()}
+          {renderUserInfo()}
+        </>
+      )}
     </Toolbar>
   </AppBar>
 }

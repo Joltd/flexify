@@ -1,5 +1,5 @@
-import { JirifyHomePage } from "@/fragments/jirify/squad-app/JirifyHomePage";
+import { TaskDashboard } from "@/fragments/jirify/squad-app/task-dashboard/TaskDashboard";
 
 export default function Page() {
-  return <JirifyHomePage />
+  return <TaskDashboard />
 }

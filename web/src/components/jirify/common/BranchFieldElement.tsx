@@ -1,6 +1,6 @@
 'use client'
 import { Controller } from "react-hook-form";
-import { BranchField, CreateBranch } from "@/components/jirify/common/BranchField";
+import { BranchField } from "@/components/jirify/common/BranchField";
 
 export interface SelectBranchElementProps {
   workspace: string
@@ -8,6 +8,10 @@ export interface SelectBranchElementProps {
   name: string
   label?: string
   nameSuggestion?: string
+  base?: boolean
+  common?: boolean
+  hidden?: boolean
+  withAdd?: boolean
 }
 
 export function BranchFieldElement({
@@ -16,6 +20,10 @@ export function BranchFieldElement({
   name,
   label = "Branch",
   nameSuggestion,
+  base,
+  common,
+  hidden,
+  withAdd,
 }: SelectBranchElementProps) {
   return <Controller
     name={name}
@@ -27,6 +35,10 @@ export function BranchFieldElement({
         value={props.field.value}
         onChange={props.field.onChange}
         nameSuggestion={nameSuggestion}
+        base={base}
+        common={common}
+        hidden={hidden}
+        withAdd={withAdd}
       />}
   />
 }

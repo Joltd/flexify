@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import { JiraIssueStatusColor } from "@/lib/jirify/types";
+import { JiraIssueStatusColor } from "@/lib/jirify/common/types";
 import { Box } from "@mui/system";
 
 export interface JiraIssueStatusProps {

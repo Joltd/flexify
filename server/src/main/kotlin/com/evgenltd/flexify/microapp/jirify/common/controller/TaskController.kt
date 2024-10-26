@@ -1,7 +1,7 @@
 package com.evgenltd.flexify.microapp.jirify.common.controller
 
 import com.evgenltd.flexify.microapp.jirify.JirifyAppSecured
-import com.evgenltd.flexify.microapp.jirify.squadapp.service.TaskService
+import com.evgenltd.flexify.microapp.jirify.common.service.TaskService
 import com.evgenltd.flexify.user.service.UserService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -14,13 +14,13 @@ class TaskController(
     private val taskService: TaskService,
 ) {
 
-    @GetMapping("/api/app/jirify/task/select")
+    @GetMapping("/api/app/jirify/task/field")
     @JirifyAppSecured
-    fun select(
+    fun field(
         @RequestParam(name = "workspace") workspace: UUID,
     ) {
         val user = userService.getCurrentUserNotNull()
-        taskService.select(user, workspace)
+        taskService.field(user, workspace)
     }
 
 }

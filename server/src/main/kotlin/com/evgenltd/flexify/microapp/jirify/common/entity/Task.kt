@@ -58,6 +58,9 @@ data class Task(
     )
     interface Properties
 
+    fun branchByRepository(repositoryId: UUID): Branch? = branches
+        .firstOrNull { it.repository.id == repositoryId }
+
     override fun toString(): String {
         return "Task(id=$id, " +
                 "externalId='$externalId', " +

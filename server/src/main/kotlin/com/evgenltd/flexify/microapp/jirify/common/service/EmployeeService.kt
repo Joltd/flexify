@@ -1,7 +1,6 @@
 package com.evgenltd.flexify.microapp.jirify.common.service
 
-import com.evgenltd.flexify.common.emptyUuid
-import com.evgenltd.flexify.microapp.jirify.common.record.SelectEmployeeRecord
+import com.evgenltd.flexify.common.FieldRecord
 import com.evgenltd.flexify.microapp.jirify.common.repository.EmployeeRepository
 import com.evgenltd.flexify.microapp.jirify.common.repository.WorkspaceRepository
 import com.evgenltd.flexify.microapp.jirify.common.repository.workspace
@@ -15,15 +14,11 @@ class EmployeeService(
     private val employeeRepository: EmployeeRepository,
 ) {
 
-    fun select(user: User, workspaceId: UUID): List<SelectEmployeeRecord> {
+    fun field(user: User, workspaceId: UUID): List<FieldRecord> {
         val workspace = workspaceRepository.workspace(user, workspaceId)
         return employeeRepository.findByWorkspace(workspace)
             .map {
-                SelectEmployeeRecord(
-                    id = it.id!!,
-                    name = it.name,
-                    me = it.me,
-                )
+                FieldRecord(id = it.id!!, label = it.name)
             }
     }
 

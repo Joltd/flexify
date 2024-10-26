@@ -15,41 +15,4 @@ export const API_URL = {
     user: '/api/app/admin/user',
     userId: '/api/app/admin/user/:id',
   },
-  jirify: {
-    common: {
-      repository: {
-        select: '/api/app/jirify/repository/select',
-      },
-      branch: {
-        select: '/api/app/jirify/branch/select',
-        root: '/api/app/jirify/branch',
-        id: '/api/app/jirify/branch/:id',
-      },
-      employee: {
-        select: '/api/app/jirify/employee/select',
-      },
-      task: {
-        select: '/api/app/jirify/task/select',
-      },
-      sprintTask: {
-        id: '/api/app/jirify/sprint-task/:id',
-      }
-    },
-    squadApp: {
-      home: {
-        activeSprint: '/api/app/jirify/squad-app/home/active-sprint',
-        beginWork: '/api/app/jirify/squad-app/home/begin-work',
-      },
-      branch: {
-        list: '/api/app/jirify/squad-app/branch',
-        base: '/api/app/jirify/squad-app/branch/base',
-        analysis: '/api/app/jirify/squad-app/branch/:id/analysis',
-        mergeRequest: '/api/app/jirify/squad-app/branch/merge-request',
-        mergeRequestId: '/api/app/jirify/squad-app/branch/merge-request/:id',
-      },
-      workspace: '/api/app/jirify/squad-app/workspace',
-      sync: '/api/app/jirify/squad-app/sync',
-      task: '/api/app/jirify/squad-app/task',
-    },
-  }
 }

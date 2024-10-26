@@ -36,10 +36,16 @@ data class Repository(
     )
     interface Properties
 
-    fun branch(id: UUID): Branch? {
-        val result = branches.filter { it.id == id }
+    fun branch(id: UUID): Branch? = branch { it.id == id }
+
+    fun branchNotNull(id: UUID): Branch = branch(id) ?: throw ApplicationException("Branch not found")
+
+    fun branch(name: String): Branch? = branch { it.name == name.trim() }
+
+    private fun branch(condition: (Branch) -> Boolean): Branch? {
+        val result = branches.filter(condition)
         if (result.size > 1) {
-            throw ApplicationException("Multiple branches with the same id")
+            throw ApplicationException("Multiple branches with the same condition")
         }
 
         return result.firstOrNull()
