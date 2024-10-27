@@ -14,7 +14,7 @@ export function BranchDashboardToolbar({}: BranchDashboardToolbarProps) {
       {dashboard.data && (
         <>
           {squadAppStore.data && (
-            <ToggleButtonGroup value={area} onChange={(event, value) => setArea(value)}>
+            <ToggleButtonGroup exclusive value={area} onChange={(event, value) => setArea(value)}>
               <ToggleButton size="small" value={DevelopmentArea.BACKEND}>Backend</ToggleButton>
               <ToggleButton size="small" value={DevelopmentArea.FRONTEND}>Frontend</ToggleButton>
             </ToggleButtonGroup>
