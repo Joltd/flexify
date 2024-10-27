@@ -164,6 +164,7 @@ export function BranchDashboardMergeRequest({}: BranchDashboardMergeRequestProps
       {!!branch.data?.mergeRequests?.length && (
         branch.data?.mergeRequests?.map((mergeRequest) => (
           <MergeRequestBadge
+            key={mergeRequest.externalId}
             externalId={mergeRequest.externalId}
             url={mergeRequest.url}
             status={getMergeRequestStatus(mergeRequest.externalStatus)}
