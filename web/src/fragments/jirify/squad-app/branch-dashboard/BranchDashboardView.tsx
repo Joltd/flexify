@@ -2,16 +2,19 @@ import { useSquadAppStore } from "@/lib/jirify/squad-app/store/squad-app-store";
 import { BranchDashboardModeEnum, useBranchDashboardStore } from "@/lib/jirify/squad-app/store/branch-dashboard-store";
 import { squadAppUrls } from "@/lib/jirify/squad-app/urls";
 import { useFetchStore } from "@/lib/common/store/fetch-store";
-import { BranchDashboardBranchUpdateData } from "@/lib/jirify/squad-app/store/type";
-import { useEffect } from "react";
+import { BranchDashboardBranchUpdateData, BranchDashboardMergeRequestEntry } from "@/lib/jirify/squad-app/store/type";
+import { SyntheticEvent, useEffect } from "react";
 import { FormContainer, SwitchElement, TextFieldElement, useForm } from "react-hook-form-mui";
-import { Alert, Button, Stack, Tooltip, Typography } from "@mui/material";
+import { Alert, Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { ListSkeleton } from "@/components/common/skeleton/ListSkeleton";
 import { Box } from "@mui/system";
 import { BranchFieldElement } from "@/components/jirify/common/BranchFieldElement";
 import { SquadAppJiraIssueStatusBadge } from "@/components/jirify/squad-app/SquadAppJiraIssueStatusBadge";
 import { getMergeRequestStatus } from "@/lib/jirify/common/integration/gitlab/types";
 import { MergeRequestBadge } from "@/components/jirify/common/MergeRequestBadge";
+import { ContentCopy, OpenInNew } from "@mui/icons-material";
+import { useClipboard } from "@/lib/common/clipboard";
+import { SquadAppJiraIssueStatusColor } from "@/lib/jirify/squad-app/types";
 
 export interface BranchDashboardViewProps {}
 
@@ -26,6 +29,7 @@ export function BranchDashboardView({}: BranchDashboardViewProps) {
   const { dashboard, branchId, setBranchId, branch, setMode } = useBranchDashboardStore()
   const branchUpdate = useFetchStore<void>('PUT', squadAppUrls.branchDashboard.branchId)
   const form = useForm<BranchDashboardBranchUpdateData>({ defaultValues })
+  const { copy } = useClipboard()
 
   useEffect(() => {
     if (branchId) {
@@ -47,6 +51,24 @@ export function BranchDashboardView({}: BranchDashboardViewProps) {
         setMode(null)
         dashboard.fetch()
       })
+  }
+
+  const handleCopyTaskList = (event: SyntheticEvent) => {
+    event.stopPropagation()
+    const richText = branch.data
+      ?.tasks
+      ?.map((task) => `<a href="${task.url}">${task.key}</a> ${task.externalStatus}`)
+      .join('</br>') || ''
+    copy("Not supported", richText)
+  }
+
+  const handleCopyMergeRequest = (event: SyntheticEvent, mergeRequest: BranchDashboardMergeRequestEntry) => {
+    event.stopPropagation()
+    const tasksRichText = branch.data
+      ?.tasks
+      ?.map((task) => `<a href="${task.url}">${task.key}</a> ${task.externalStatus}`)
+      .join('</br>') || ''
+    copy("Not supported", `<a href="${mergeRequest.url}">ПР</a> по задачам</br>${tasksRichText}`)
   }
 
   return (
@@ -89,8 +111,11 @@ export function BranchDashboardView({}: BranchDashboardViewProps) {
 
             {branch.data.tasks.length > 0 && (
               <>
-                <Stack direction="row" marginTop={2} alignItems="center">
+                <Stack direction="row" marginTop={2} gap={1} alignItems="center">
                   <Typography>Tasks</Typography>
+                  <IconButton size="small" onClick={handleCopyTaskList}>
+                    <ContentCopy fontSize="small" />
+                  </IconButton>
                   <Box flexGrow={1} />
                   <Button onClick={() => setMode(BranchDashboardModeEnum.RELATION)}>
                     View all
@@ -98,6 +123,10 @@ export function BranchDashboardView({}: BranchDashboardViewProps) {
                 </Stack>
                 {branch.data.tasks.map((task) => (
                   <Stack key={task.id} direction="row" gap={1}>
+
+                    <IconButton size="small" href={task.url} target="_blank" onClick={(event) => event.stopPropagation()}>
+                      <OpenInNew fontSize="small" />
+                    </IconButton>
 
                     <Typography flexShrink={0}>{task.key}</Typography>
 
@@ -133,6 +162,10 @@ export function BranchDashboardView({}: BranchDashboardViewProps) {
                   sourceBranch={branch.data?.name}
                   targetBranch={mergeRequest.targetBranch}
                 />
+
+                <IconButton size="small" onClick={(event) => handleCopyMergeRequest(event, mergeRequest)}>
+                  <ContentCopy fontSize="small" />
+                </IconButton>
 
               </Stack>
             ))}
