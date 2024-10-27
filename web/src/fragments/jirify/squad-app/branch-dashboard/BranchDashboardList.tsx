@@ -2,6 +2,9 @@ import { BranchDashboardModeEnum, useBranchDashboardStore } from "@/lib/jirify/s
 import { Alert, Fab, Grid2, Stack, Tooltip, Typography } from "@mui/material";
 import { ListSkeleton } from "@/components/common/skeleton/ListSkeleton";
 import { Add, CheckCircle, Error } from "@mui/icons-material";
+import { Box } from "@mui/system";
+import { MergeRequestBadge } from "@/components/jirify/common/MergeRequestBadge";
+import { getMergeRequestStatus } from "@/lib/jirify/common/integration/gitlab/types";
 
 export interface BranchDashboardListProps {}
 
@@ -13,7 +16,7 @@ export function BranchDashboardList({}: BranchDashboardListProps) {
   }
 
   return (
-    <Grid2 size={12} display="flex" flexDirection="column">
+    <Grid2 size={12} display="flex" flexDirection="column" gap={1}>
       {dashboard.loading ? (
         <ListSkeleton />
       ) : dashboard.error ? (
@@ -45,6 +48,17 @@ export function BranchDashboardList({}: BranchDashboardListProps) {
               )}
 
               <Typography noWrap flexGrow={1}>{branch.name}</Typography>
+
+              <Box display="flex" flexGrow={1} />
+
+              {branch.mergeRequest && (
+                <MergeRequestBadge
+                  externalId={branch.mergeRequest.externalId}
+                  url={branch.mergeRequest.url}
+                  status={getMergeRequestStatus(branch.mergeRequest.externalStatus)}
+                  targetBranch={branch.mergeRequest.targetBranch}
+                />
+              )}
 
             </Stack>
           ))

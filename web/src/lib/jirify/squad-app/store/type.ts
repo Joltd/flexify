@@ -57,8 +57,10 @@ export interface TaskDashboardTaskUpdateData {
 export interface BranchDashboardEntry {
   id: string
   name: string
+  description: string
   readyToProd: boolean
   hidden: boolean
+  mergeRequest: BranchDashboardMergeRequestEntry | null
 }
 
 export interface BranchDashboardBranchData {

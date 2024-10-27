@@ -5,6 +5,7 @@ enum class TaskStatus {
     TODO,
     IN_PROGRESS,
     REVIEW,
+    DEPLOY,
     TESTING,
     READY_TO_PROD,
     DONE,

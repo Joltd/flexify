@@ -12,6 +12,7 @@ import com.evgenltd.flexify.microapp.jirify.squadapp.record.*
 import com.evgenltd.flexify.user.entity.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 import java.util.*
 
 @Service
@@ -30,12 +31,14 @@ class BranchDashboardService(
         return repository.branches
             .filter { filter.hidden == true || !it.hidden }
             .filter { !it.base }
-            .map {
+            .map { branch ->
                 BranchDashboardEntry(
-                    id = it.id!!,
-                    name = it.name,
-                    readyToProd = it.tasks.all { task -> task.isReadyToProd() },
-                    hidden = it.hidden,
+                    id = branch.id!!,
+                    name = branch.name,
+                    description = branch.tasks.firstOrNull()?.summary ?: "",
+                    readyToProd = branch.tasks.all { task -> task.isReadyToProd() },
+                    hidden = branch.hidden,
+                    mergeRequest = branch.mergeRequests.firstOrNull { !it.hidden }?.toMergeRequestEntry(),
                 )
             }
             .filter { filter.readyToProd == null || it.readyToProd == filter.readyToProd }
@@ -95,6 +98,16 @@ class BranchDashboardService(
 
         return branches.reversed()
             .map { it.toRelationEntry() }
+    }
+
+    @Transactional
+    fun mark(user: User, id: UUID, status: TaskStatus) {
+        branchRepository.branch(user, id)
+            .tasks
+            .onEach {
+                it.status = status
+                it.updatedAt = LocalDateTime.now()
+            }
     }
 
     fun getMergeRequest(user: User, id: UUID, externalId: String): BranchDashboardMergeRequestEntry {

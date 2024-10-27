@@ -60,15 +60,6 @@ export function TaskDashboardView({}: TaskDashboardViewProps) {
       dashboard.fetch()
     })
   }
-  //
-  // const handleViewBranchRelation = (branch: string | null) => {
-  //   if (branch) {
-  //     router.push({
-  //       pathname: squadAppRouts.branchDashboard,
-  //       query: { branch, mode: 'RELATION' }
-  //     })
-  //   }
-  // }
 
   return (
     <Stack width={400} padding={2}>
@@ -81,12 +72,13 @@ export function TaskDashboardView({}: TaskDashboardViewProps) {
       ) : task.data ? (
         <FormContainer formContext={form} onSuccess={handleSave}>
           <Stack gap={2}>
-            <Stack direction="row">
+            <Stack direction="row" alignItems="center">
               <Typography>{task.data.key}</Typography>
               <Box flexGrow={1} />
               <Button
                 type="submit"
                 color="primary"
+                variant="contained"
                 disabled={taskUpdate.loading}
               >
                 Save
@@ -103,7 +95,7 @@ export function TaskDashboardView({}: TaskDashboardViewProps) {
 
             {squadAppStore.data && (
               <>
-                <Typography marginTop={1}>Branches</Typography>
+                <Typography marginTop={2}>Branches</Typography>
                 <Box display="grid" gridTemplateColumns="1fr min-content" gap={1}>
                   <BranchFieldElement
                     workspace={squadAppStore.data?.id}

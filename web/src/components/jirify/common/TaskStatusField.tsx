@@ -12,6 +12,7 @@ const suggestions = {
   [TaskStatusEnum.TODO]: [TaskStatusEnum.IN_PROGRESS, TaskStatusEnum.REVIEW, TaskStatusEnum.TESTING],
   [TaskStatusEnum.IN_PROGRESS]: [TaskStatusEnum.TODO, TaskStatusEnum.REVIEW, TaskStatusEnum.TESTING],
   [TaskStatusEnum.REVIEW]: [TaskStatusEnum.TODO, TaskStatusEnum.IN_PROGRESS, TaskStatusEnum.TESTING],
+  [TaskStatusEnum.DEPLOY]: [TaskStatusEnum.IN_PROGRESS, TaskStatusEnum.REVIEW, TaskStatusEnum.TESTING],
   [TaskStatusEnum.TESTING]: [],
   [TaskStatusEnum.READY_TO_PROD]: [],
   [TaskStatusEnum.DONE]: [],

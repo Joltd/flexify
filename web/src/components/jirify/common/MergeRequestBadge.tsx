@@ -1,7 +1,7 @@
 import { Button, Stack, Tooltip, Typography } from "@mui/material";
 import { ArrowRightAlt, Cancel, CheckCircle, Error, Pending } from "@mui/icons-material";
 import { MergeRequestStatusEnum, MergeRequestStatusLabel } from "@/lib/jirify/common/types";
-import { ReactNode } from "react";
+import { ReactNode, SyntheticEvent } from "react";
 
 export interface MergeRequestBadgeProps {
   externalId: string
@@ -20,6 +20,10 @@ export function MergeRequestBadge({
   sourceBranch,
   targetBranch,
 }: MergeRequestBadgeProps) {
+
+  const handleClick = (event: SyntheticEvent) => {
+    event.stopPropagation()
+  }
 
   const propsByStatus = (): {
     color: "error" | "success" | "info" | "warning" | "primary" | "secondary",
@@ -46,7 +50,7 @@ export function MergeRequestBadge({
   return (
     <Stack direction="row" gap={1} alignItems="center">
       <Tooltip title={tooltip} placement="left">
-        <Button href={url} target="_blank" variant="outlined" {...propsByStatus()} >
+        <Button href={url} target="_blank" variant="outlined" onClick={handleClick} {...propsByStatus()} >
           {externalId}
         </Button>
       </Tooltip>

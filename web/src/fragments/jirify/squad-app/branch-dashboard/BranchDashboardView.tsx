@@ -2,7 +2,10 @@ import { useSquadAppStore } from "@/lib/jirify/squad-app/store/squad-app-store";
 import { BranchDashboardModeEnum, useBranchDashboardStore } from "@/lib/jirify/squad-app/store/branch-dashboard-store";
 import { squadAppUrls } from "@/lib/jirify/squad-app/urls";
 import { useFetchStore } from "@/lib/common/store/fetch-store";
-import { BranchDashboardBranchUpdateData, BranchDashboardMergeRequestEntry } from "@/lib/jirify/squad-app/store/type";
+import {
+  BranchDashboardBranchUpdateData,
+  BranchDashboardMergeRequestEntry
+} from "@/lib/jirify/squad-app/store/type";
 import { SyntheticEvent, useEffect } from "react";
 import { FormContainer, SwitchElement, TextFieldElement, useForm } from "react-hook-form-mui";
 import { Alert, Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
@@ -14,7 +17,7 @@ import { getMergeRequestStatus } from "@/lib/jirify/common/integration/gitlab/ty
 import { MergeRequestBadge } from "@/components/jirify/common/MergeRequestBadge";
 import { ContentCopy, OpenInNew } from "@mui/icons-material";
 import { useClipboard } from "@/lib/common/clipboard";
-import { SquadAppJiraIssueStatusColor } from "@/lib/jirify/squad-app/types";
+import { TaskStatusEnum } from "@/lib/jirify/common/types";
 
 export interface BranchDashboardViewProps {}
 
@@ -28,12 +31,14 @@ export function BranchDashboardView({}: BranchDashboardViewProps) {
   const squadAppStore = useSquadAppStore()
   const { dashboard, branchId, setBranchId, branch, setMode } = useBranchDashboardStore()
   const branchUpdate = useFetchStore<void>('PUT', squadAppUrls.branchDashboard.branchId)
+  const mark = useFetchStore<void>('POST', squadAppUrls.branchDashboard.mark)
   const form = useForm<BranchDashboardBranchUpdateData>({ defaultValues })
   const { copy } = useClipboard()
 
   useEffect(() => {
     if (branchId) {
       branchUpdate.updatePathParams({ id: branchId })
+      mark.updatePathParams({ id: branchId })
     }
   }, [branchId]);
 
@@ -51,6 +56,11 @@ export function BranchDashboardView({}: BranchDashboardViewProps) {
         setMode(null)
         dashboard.fetch()
       })
+  }
+
+  const handleMark = (event: SyntheticEvent, status: TaskStatusEnum) => {
+    event.stopPropagation()
+    mark.fetch({ body: status })
   }
 
   const handleCopyTaskList = (event: SyntheticEvent) => {
@@ -83,12 +93,16 @@ export function BranchDashboardView({}: BranchDashboardViewProps) {
             {branchUpdate.error && (
               <Alert severity="error">{branchUpdate.error}</Alert>
             )}
-            <Stack direction="row">
+            {mark.error && (
+              <Alert severity="error">{mark.error}</Alert>
+            )}
+            <Stack direction="row" alignItems="center">
               <Typography>Branch</Typography>
               <Box flexGrow={1} />
               <Button
                 type="submit"
                 color="primary"
+                variant="contained"
                 disabled={branchUpdate.loading}
               >
                 Save
@@ -109,6 +123,38 @@ export function BranchDashboardView({}: BranchDashboardViewProps) {
 
             <SwitchElement label="Hidden" name="hidden" />
 
+            {branch.data && (
+              <Stack marginTop={2} gap={1}>
+                <Typography>Actions</Typography>
+                <Stack direction="row" gap={1}>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={(event) => handleMark(event, TaskStatusEnum.DEPLOY)}
+                    disabled={mark.loading}
+                  >
+                    Deploy
+                  </Button>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={(event) => handleMark(event, TaskStatusEnum.REVIEW)}
+                    disabled={mark.loading}
+                  >
+                    Review
+                  </Button>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={(event) => handleMark(event, TaskStatusEnum.DONE)}
+                    disabled={mark.loading}
+                  >
+                    Done
+                  </Button>
+                </Stack>
+              </Stack>
+            )}
+
             {branch.data.tasks.length > 0 && (
               <>
                 <Stack direction="row" marginTop={2} gap={1} alignItems="center">
@@ -117,12 +163,17 @@ export function BranchDashboardView({}: BranchDashboardViewProps) {
                     <ContentCopy fontSize="small" />
                   </IconButton>
                   <Box flexGrow={1} />
-                  <Button onClick={() => setMode(BranchDashboardModeEnum.RELATION)}>
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    size="small"
+                    onClick={() => setMode(BranchDashboardModeEnum.RELATION)}
+                  >
                     View all
                   </Button>
                 </Stack>
                 {branch.data.tasks.map((task) => (
-                  <Stack key={task.id} direction="row" gap={1}>
+                  <Stack key={task.id} direction="row" gap={1} alignItems="center">
 
                     <IconButton size="small" href={task.url} target="_blank" onClick={(event) => event.stopPropagation()}>
                       <OpenInNew fontSize="small" />
@@ -146,13 +197,18 @@ export function BranchDashboardView({}: BranchDashboardViewProps) {
             <Stack direction="row" marginTop={2} alignItems="center">
               <Typography>Merge requests</Typography>
               <Box flexGrow={1} />
-              <Button onClick={() => setMode(BranchDashboardModeEnum.MERGE_REQUEST)}>
+              <Button
+                color="primary"
+                variant="contained"
+                size="small"
+                onClick={() => setMode(BranchDashboardModeEnum.MERGE_REQUEST)}
+              >
                 View all
               </Button>
             </Stack>
 
             {branch.data.mergeRequests.map((mergeRequest) => (
-              <Stack key={mergeRequest.externalId} direction="row" gap={1}>
+              <Stack key={mergeRequest.externalId} direction="row" gap={1} alignItems="center">
 
                 <MergeRequestBadge
                   externalId={mergeRequest.externalId}

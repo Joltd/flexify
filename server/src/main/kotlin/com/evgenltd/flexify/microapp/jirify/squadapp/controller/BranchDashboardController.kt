@@ -1,8 +1,10 @@
 package com.evgenltd.flexify.microapp.jirify.squadapp.controller
 
 import com.evgenltd.flexify.microapp.jirify.JirifyAppSecured
+import com.evgenltd.flexify.microapp.jirify.common.entity.TaskStatus
 import com.evgenltd.flexify.microapp.jirify.squadapp.record.*
 import com.evgenltd.flexify.microapp.jirify.squadapp.service.BranchDashboardService
+import com.evgenltd.flexify.microapp.jirify.squadapp.service.SyncService
 import com.evgenltd.flexify.user.service.UserService
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -17,6 +19,7 @@ import java.util.*
 class BranchDashboardController(
     private val userService: UserService,
     private val branchDashboardService: BranchDashboardService,
+    private val syncService: SyncService,
 ) {
 
     @GetMapping("/api/app/jirify/squad-app/branch-dashboard")
@@ -52,6 +55,15 @@ class BranchDashboardController(
     fun branchRelation(@PathVariable id: UUID): List<BranchDashboardRelationEntry> {
         val user = userService.getCurrentUserNotNull()
         return branchDashboardService.branchRelation(user, id)
+    }
+
+    @PostMapping("/api/app/jirify/squad-app/branch-dashboard/branch/{id}/mark")
+    fun markAsDeploy(@PathVariable id: UUID, @RequestBody status: TaskStatus) {
+        val user = userService.getCurrentUserNotNull()
+        branchDashboardService.mark(user, id, status)
+        if (status == TaskStatus.DONE) {
+            syncService.markTaskDone(user, id)
+        }
     }
 
     @GetMapping("/api/app/jirify/squad-app/branch-dashboard/branch/{id}/merge-request/{mergeRequestId}")

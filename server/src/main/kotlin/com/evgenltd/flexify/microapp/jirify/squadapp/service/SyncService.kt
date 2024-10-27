@@ -3,12 +3,14 @@ package com.evgenltd.flexify.microapp.jirify.squadapp.service
 import com.evgenltd.flexify.microapp.jirify.common.entity.*
 import com.evgenltd.flexify.microapp.jirify.common.repository.*
 import com.evgenltd.flexify.microapp.jirify.common.service.integration.jira.*
+import com.evgenltd.flexify.microapp.jirify.squadapp.entity.JiraIssueStatus
 import com.evgenltd.flexify.microapp.jirify.squadapp.entity.TaskProperties
 import com.evgenltd.flexify.microapp.jirify.squadapp.entity.properties
 import com.evgenltd.flexify.user.entity.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+import java.util.UUID
 
 @Service
 @Transactional
@@ -18,6 +20,7 @@ class SyncService(
     private val sprintTaskRepository: SprintTaskRepository,
     private val taskRepository: TaskRepository,
     private val employeeRepository: EmployeeRepository,
+    private val branchRepository: BranchRepository,
     private val jiraIntegrationFactory: JiraIntegrationFactory,
 ) {
 
@@ -26,6 +29,14 @@ class SyncService(
             .properties()
             .jira
         return jiraIntegrationFactory.create(host, user, token, board)
+    }
+
+    fun markTaskDone(appUser: User, branchId: UUID) {
+        val branch = branchRepository.branch(appUser, branchId)
+        val jira = prepareJiraIntegration(appUser)
+        for (task in branch.tasks) {
+            jira.issueTransitionByName(task.key, JiraIssueStatus.DONE.value)
+        }
     }
 
     fun syncSprint(user: User, activeJiraSprint: JiraSprint, jiraIssues: List<JiraIssue>) {

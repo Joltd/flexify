@@ -12,8 +12,10 @@ data class BranchDashboardFilter(
 data class BranchDashboardEntry(
     val id: UUID,
     val name: String,
+    val description: String,
     val readyToProd: Boolean,
     val hidden: Boolean,
+    val mergeRequest: BranchDashboardMergeRequestEntry?,
 )
 
 data class BranchDashboardBranchData(

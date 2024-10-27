@@ -10,6 +10,7 @@ export const squadAppUrls = {
     branch: '/api/app/jirify/squad-app/branch-dashboard/branch',
     branchId: '/api/app/jirify/squad-app/branch-dashboard/branch/:id',
     relation: '/api/app/jirify/squad-app/branch-dashboard/branch/:id/relation',
+    mark: '/api/app/jirify/squad-app/branch-dashboard/branch/:id/mark',
     mergeRequest: '/api/app/jirify/squad-app/branch-dashboard/branch/:id/merge-request',
     mergeRequestId: '/api/app/jirify/squad-app/branch-dashboard/branch/:id/merge-request/:mergeRequestId',
   },
