@@ -74,11 +74,17 @@ export function BranchDashboardView({}: BranchDashboardViewProps) {
 
   const handleCopyMergeRequest = (event: SyntheticEvent, mergeRequest: BranchDashboardMergeRequestEntry) => {
     event.stopPropagation()
-    const tasksRichText = branch.data
+    const tasks = branch.data
       ?.tasks
-      ?.map((task) => `<a href="${task.url}">${task.key}</a> ${task.externalStatus}`)
-      .join('</br>') || ''
-    copy("Not supported", `<a href="${mergeRequest.url}">ПР</a> по задачам</br>${tasksRichText}`)
+      ?.map((task) => `<a href="${task.url}">${task.key}</a> ${task.summary}`)
+      || []
+
+    if (tasks.length > 1) {
+      copy("Not supported", `<a href="${mergeRequest.url}">ПР</a> по задачам</br>${tasks.join('</br>')}`)
+    } else if (tasks.length > 0) {
+      copy("Not supported", `<a href="${mergeRequest.url}">ПР</a> по задаче ${tasks.join('')}`)
+    }
+
   }
 
   return (
