@@ -104,6 +104,7 @@ export function TaskDashboardView({}: TaskDashboardViewProps) {
                     label="Backend"
                     nameSuggestion={task.data.key}
                     common
+                    withAdd
                   />
                   <IconButton href={`${squadAppRouts.branchDashboard}?id=${backendBranch}`} disabled={!backendBranch}>
                     <Visibility />
@@ -115,6 +116,7 @@ export function TaskDashboardView({}: TaskDashboardViewProps) {
                     label="Frontend"
                     nameSuggestion={task.data.key}
                     common
+                    withAdd
                   />
                   <IconButton href={`${squadAppRouts.branchDashboard}?id=${frontendBranch}`} disabled={!frontendBranch}>
                     <Visibility />
