@@ -135,12 +135,12 @@ export function BranchField({
       value={branch}
       onChange={handleSelectBranch}
       getOptionLabel={(option) => option.label}
-      sx={{ minWidth: 200}}
+      sx={{ width: 400}}
     />
   )
 
   const renderCreateBranch = () => (
-    <Stack direction="row" gap={1} alignItems="center">
+    <Stack direction="row" gap={1} alignItems="center" width={400}>
       <TextField
         label="Name"
         value={name}

@@ -4,7 +4,7 @@ import com.evgenltd.flexify.microapp.jirify.JirifyAppSecured
 import com.evgenltd.flexify.microapp.jirify.common.entity.TaskStatus
 import com.evgenltd.flexify.microapp.jirify.squadapp.record.*
 import com.evgenltd.flexify.microapp.jirify.squadapp.service.BranchDashboardService
-import com.evgenltd.flexify.microapp.jirify.squadapp.service.SyncService
+import com.evgenltd.flexify.microapp.jirify.squadapp.service.TaskSyncService
 import com.evgenltd.flexify.user.service.UserService
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -19,7 +19,7 @@ import java.util.*
 class BranchDashboardController(
     private val userService: UserService,
     private val branchDashboardService: BranchDashboardService,
-    private val syncService: SyncService,
+    private val syncService: TaskSyncService,
 ) {
 
     @GetMapping("/api/app/jirify/squad-app/branch-dashboard")

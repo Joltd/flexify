@@ -14,7 +14,7 @@ import java.util.UUID
 
 @Service
 @Transactional
-class SyncService(
+class TaskSyncService(
     private val workspaceRepository: WorkspaceRepository,
     private val sprintRepository: SprintRepository,
     private val sprintTaskRepository: SprintTaskRepository,
@@ -90,7 +90,6 @@ class SyncService(
         externalId = jiraSprint.id.toString(),
         active = true,
         workspace = workspace,
-        updatedAt = LocalDateTime.now(),
     ).let {
         workspace.sprints.onEach { it.active = false }
         sprintRepository.save(it)
@@ -126,7 +125,6 @@ class SyncService(
         task.externalStatus = jiraIssue.fields.status?.name
         task.priority = jiraIssue.fields.priority?.id?.toIntOrNull()
         task.assignee = employee
-        task.updatedAt = LocalDateTime.now()
         transfers[task.externalStatus]
             ?.get(task.status)
             ?.let { task.status = it }
@@ -153,7 +151,6 @@ class SyncService(
     private fun updateSprintTask(jiraIssue: JiraIssue, sprintTask: SprintTask) {
         sprintTask.externalStatus = jiraIssue.fields.status?.name
         sprintTask.estimation = jiraIssue.fields.timeEstimate
-        sprintTask.updatedAt = LocalDateTime.now()
     }
 
 }

@@ -16,7 +16,6 @@ import com.evgenltd.flexify.microapp.jirify.squadapp.record.*
 import com.evgenltd.flexify.user.entity.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
 import java.util.UUID
 
 @Service
@@ -57,6 +56,8 @@ class TaskDashboardService(
 
     fun task(user: User, id: UUID): TaskDashboardTaskData {
         val sprintTask = sprintTaskRepository.task(user, id)
+        val backendBranch = sprintTask.task.branchData(DevelopmentArea.BACKEND)
+        val frontendBranch = sprintTask.task.branchData(DevelopmentArea.FRONTEND)
         return TaskDashboardTaskData(
             id = sprintTask.id!!,
             key = sprintTask.task.key,
@@ -66,8 +67,10 @@ class TaskDashboardService(
             externalStatus = sprintTask.task.externalStatus,
             assignee = sprintTask.task.assignee?.let { EmployeeRecord(it.id!!, it.name, it.me) },
             performed = sprintTask.performed,
-            backendBranch = sprintTask.task.branchByType(DevelopmentArea.BACKEND)?.id,
-            frontendBranch = sprintTask.task.branchByType(DevelopmentArea.FRONTEND)?.id,
+            backendBranch = backendBranch?.id,
+            backendMergeRequest = backendBranch?.mergeRequest,
+            frontendBranch = frontendBranch?.id,
+            frontendMergeRequest = frontendBranch?.mergeRequest,
         )
     }
 
@@ -77,9 +80,7 @@ class TaskDashboardService(
         val sprintTask = sprintTaskRepository.task(user, id)
 
         sprintTask.performed = data.performed
-        sprintTask.updatedAt = LocalDateTime.now()
         sprintTask.task.status = data.status
-        sprintTask.task.updatedAt = LocalDateTime.now()
 
         taskBranchRelationService.linkToBranch(
             task = sprintTask.task,
@@ -113,8 +114,29 @@ class TaskDashboardService(
         performed = performed,
         estimation = estimation,
         priority = task.priority,
-        backend = task.properties().backend,
-        frontend = task.properties().frontend,
+        backend = task.branchData(DevelopmentArea.BACKEND),
+        frontend = task.branchData(DevelopmentArea.FRONTEND),
+    )
+
+    private fun Task.branchData(area: DevelopmentArea): TaskDashboardEntryBranch? {
+        val branch = branchByType(area) ?: return null
+        return TaskDashboardEntryBranch(
+            id = branch.id!!,
+            name = branch.name,
+            mergeRequest = branch.mergeRequests
+                .asSequence()
+                .filter { !it.hidden }
+                .sortedByDescending { it.createdAt }
+                .firstOrNull()
+                ?.toMergeRequestEntry(),
+        )
+    }
+
+    private fun MergeRequest.toMergeRequestEntry(): TaskDashboardEntryBranchMergeRequest = TaskDashboardEntryBranchMergeRequest(
+        id = id!!,
+        externalId = externalId,
+        url = url,
+        status = status,
     )
 
 }

@@ -4,7 +4,7 @@ import { ListSkeleton } from "@/components/common/skeleton/ListSkeleton";
 import { useFetchStore } from "@/lib/common/store/fetch-store";
 import { TaskDashboardTaskData, TaskDashboardTaskUpdateData } from "@/lib/jirify/squad-app/store/type";
 import { SquadAppJiraIssueStatusBadge } from "@/components/jirify/squad-app/SquadAppJiraIssueStatusBadge";
-import { squadAppRouts, squadAppUrls } from "@/lib/jirify/squad-app/urls";
+import { squadAppUrls } from "@/lib/jirify/squad-app/urls";
 import { FormContainer, SwitchElement, useForm } from "react-hook-form-mui";
 import { TaskStatusFieldElement } from "@/components/jirify/common/TaskStatusFieldElement";
 import { BranchFieldElement } from "@/components/jirify/common/BranchFieldElement";
@@ -12,6 +12,8 @@ import { useSquadAppStore } from "@/lib/jirify/squad-app/store/squad-app-store";
 import { Box } from "@mui/system";
 import { useTaskDashboardStore } from "@/lib/jirify/squad-app/store/task-dashboard-store";
 import { Visibility } from "@mui/icons-material";
+import { BranchDashboardModeEnum, useBranchDashboardStore } from "@/lib/jirify/squad-app/store/branch-dashboard-store";
+import { MergeRequestBadge } from "@/components/jirify/common/MergeRequestBadge";
 
 export interface TaskDashboardViewProps {}
 
@@ -25,11 +27,10 @@ const defaultValues = {
 export function TaskDashboardView({}: TaskDashboardViewProps) {
   const squadAppStore = useSquadAppStore()
   const { dashboard, task: id, setTask } = useTaskDashboardStore()
+  const { setBranchId, setMode } = useBranchDashboardStore()
   const task = useFetchStore<TaskDashboardTaskData>('GET', squadAppUrls.taskDashboard.taskId)
   const taskUpdate = useFetchStore<TaskDashboardTaskData>('PUT', squadAppUrls.taskDashboard.taskId)
   const form = useForm<TaskDashboardTaskUpdateData>({ defaultValues })
-  const backendBranch = form.watch('backendBranch')
-  const frontendBranch = form.watch('frontendBranch')
 
   useEffect(() => {
     if (id) {
@@ -61,8 +62,17 @@ export function TaskDashboardView({}: TaskDashboardViewProps) {
     })
   }
 
+  const handleViewBranch = (branch?: string) => {
+    if (!branch) {
+      return
+    }
+
+    setBranchId(branch)
+    setMode(BranchDashboardModeEnum.VIEW)
+  }
+
   return (
-    <Stack width={400} padding={2}>
+    <Stack width={600} padding={2}>
       {task.loading ? (
         <ListSkeleton />
       ) : task.error ? (
@@ -96,7 +106,7 @@ export function TaskDashboardView({}: TaskDashboardViewProps) {
             {squadAppStore.data && (
               <>
                 <Typography marginTop={2}>Branches</Typography>
-                <Box display="grid" gridTemplateColumns="1fr min-content" gap={1}>
+                <Stack direction="row" gap={1}>
                   <BranchFieldElement
                     workspace={squadAppStore.data?.id}
                     repository={squadAppStore.data?.backendRepository}
@@ -106,9 +116,18 @@ export function TaskDashboardView({}: TaskDashboardViewProps) {
                     common
                     withAdd
                   />
-                  <IconButton href={`${squadAppRouts.branchDashboard}?id=${backendBranch}`} disabled={!backendBranch}>
+                  {task.data.backendMergeRequest && (
+                    <MergeRequestBadge
+                      externalId={task.data.backendMergeRequest.externalId}
+                      url={task.data.backendMergeRequest.url}
+                      status={task.data.backendMergeRequest.status}
+                    />
+                  )}
+                  <IconButton onClick={() => handleViewBranch(task.data?.backendBranch)} disabled={!task.data.backendBranch}>
                     <Visibility />
                   </IconButton>
+                </Stack>
+                <Stack direction="row" gap={1}>
                   <BranchFieldElement
                     workspace={squadAppStore.data?.id}
                     repository={squadAppStore.data?.frontendRepository}
@@ -118,10 +137,17 @@ export function TaskDashboardView({}: TaskDashboardViewProps) {
                     common
                     withAdd
                   />
-                  <IconButton href={`${squadAppRouts.branchDashboard}?id=${frontendBranch}`} disabled={!frontendBranch}>
+                  {task.data.frontendMergeRequest && (
+                    <MergeRequestBadge
+                      externalId={task.data.frontendMergeRequest.externalId}
+                      url={task.data.frontendMergeRequest.url}
+                      status={task.data.frontendMergeRequest.status}
+                    />
+                  )}
+                  <IconButton onClick={() => handleViewBranch(task.data?.frontendBranch)} disabled={!task.data.frontendBranch}>
                     <Visibility />
                   </IconButton>
-                </Box>
+                </Stack>
               </>
             )}
           </Stack>

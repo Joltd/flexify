@@ -15,11 +15,13 @@ import { BranchFieldElement } from "@/components/jirify/common/BranchFieldElemen
 import { SquadAppJiraIssueStatusBadge } from "@/components/jirify/squad-app/SquadAppJiraIssueStatusBadge";
 import { getMergeRequestStatus } from "@/lib/jirify/common/integration/gitlab/types";
 import { MergeRequestBadge } from "@/components/jirify/common/MergeRequestBadge";
-import { ContentCopy, OpenInNew } from "@mui/icons-material";
+import { ArrowBack, ContentCopy, OpenInNew } from "@mui/icons-material";
 import { useClipboard } from "@/lib/common/clipboard";
 import { TaskStatusEnum } from "@/lib/jirify/common/types";
 
-export interface BranchDashboardViewProps {}
+export interface BranchDashboardViewProps {
+  onBack?: () => void
+}
 
 const defaultValues = {
   name: '',
@@ -27,7 +29,7 @@ const defaultValues = {
   hidden: false,
 }
 
-export function BranchDashboardView({}: BranchDashboardViewProps) {
+export function BranchDashboardView({ onBack }: BranchDashboardViewProps) {
   const squadAppStore = useSquadAppStore()
   const { dashboard, branchId, setBranchId, branch, setMode } = useBranchDashboardStore()
   const branchUpdate = useFetchStore<void>('PUT', squadAppUrls.branchDashboard.branchId)
@@ -37,8 +39,10 @@ export function BranchDashboardView({}: BranchDashboardViewProps) {
 
   useEffect(() => {
     if (branchId) {
+      branch.updatePathParams({ id: branchId })
       branchUpdate.updatePathParams({ id: branchId })
       mark.updatePathParams({ id: branchId })
+      branch.fetch()
     }
   }, [branchId]);
 
@@ -88,7 +92,7 @@ export function BranchDashboardView({}: BranchDashboardViewProps) {
   }
 
   return (
-    <Stack width={400} padding={2}>
+    <Stack width={600} padding={2}>
       {branch.loading ? (
         <ListSkeleton />
       ) : branch.error ? (
@@ -103,6 +107,11 @@ export function BranchDashboardView({}: BranchDashboardViewProps) {
               <Alert severity="error">{mark.error}</Alert>
             )}
             <Stack direction="row" alignItems="center">
+              {onBack && (
+                <IconButton onClick={onBack}>
+                  <ArrowBack />
+                </IconButton>
+              )}
               <Typography>Branch</Typography>
               <Box flexGrow={1} />
               <Button

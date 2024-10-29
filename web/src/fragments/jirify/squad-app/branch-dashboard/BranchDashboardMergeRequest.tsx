@@ -86,7 +86,7 @@ export function BranchDashboardMergeRequest({}: BranchDashboardMergeRequestProps
   }
 
   return (
-    <Stack width={500} padding={2} gap={2}>
+    <Stack width={600} padding={2} gap={2}>
       <Stack direction="row" gap={2} alignItems="center">
         <IconButton onClick={() => setMode(BranchDashboardModeEnum.VIEW)}>
           <ArrowBack />

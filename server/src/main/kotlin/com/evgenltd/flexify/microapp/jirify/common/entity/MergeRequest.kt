@@ -2,6 +2,9 @@ package com.evgenltd.flexify.microapp.jirify.common.entity
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import jakarta.persistence.*
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.LastModifiedDate
+import java.time.LocalDateTime
 import java.util.*
 
 @Entity
@@ -16,9 +19,18 @@ data class MergeRequest(
 
     var url: String,
 
+    @Enumerated(EnumType.STRING)
+    var status: MergeRequestStatus,
+
     var externalStatus: String,
 
     var hidden: Boolean = false,
+
+    @CreatedDate
+    var createdAt: LocalDateTime = LocalDateTime.now(),
+
+    @LastModifiedDate
+    var updatedAt: LocalDateTime = LocalDateTime.now(),
 
     @ManyToOne
     var sourceBranch: Branch,

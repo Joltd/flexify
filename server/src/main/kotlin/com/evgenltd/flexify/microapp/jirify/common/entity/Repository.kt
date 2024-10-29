@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import jakarta.persistence.*
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.LastModifiedDate
+import java.time.LocalDateTime
 import java.util.*
 
 @Entity
@@ -21,6 +24,12 @@ data class Repository(
 
     @JdbcTypeCode(SqlTypes.JSON)
     var properties: Properties? = null,
+
+    @CreatedDate
+    var createdAt: LocalDateTime = LocalDateTime.now(),
+
+    @LastModifiedDate
+    var updatedAt: LocalDateTime = LocalDateTime.now(),
 
     @ManyToOne
     var workspace: Workspace,

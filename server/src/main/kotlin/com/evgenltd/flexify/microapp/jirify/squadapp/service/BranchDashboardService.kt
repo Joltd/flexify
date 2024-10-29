@@ -5,6 +5,7 @@ import com.evgenltd.flexify.microapp.jirify.common.entity.*
 import com.evgenltd.flexify.microapp.jirify.common.repository.*
 import com.evgenltd.flexify.microapp.jirify.common.service.integration.gitlab.GitLabIntegration
 import com.evgenltd.flexify.microapp.jirify.common.service.integration.gitlab.GitLabIntegrationFactory
+import com.evgenltd.flexify.microapp.jirify.common.service.integration.gitlab.resolveStatus
 import com.evgenltd.flexify.microapp.jirify.squadapp.entity.JiraIssueStatus
 import com.evgenltd.flexify.microapp.jirify.squadapp.entity.properties
 import com.evgenltd.flexify.microapp.jirify.squadapp.entity.repositoryByType
@@ -12,7 +13,6 @@ import com.evgenltd.flexify.microapp.jirify.squadapp.record.*
 import com.evgenltd.flexify.user.entity.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
 import java.util.*
 
 @Service
@@ -38,7 +38,12 @@ class BranchDashboardService(
                     description = branch.tasks.firstOrNull()?.summary ?: "",
                     readyToProd = branch.tasks.all { task -> task.isReadyToProd() },
                     hidden = branch.hidden,
-                    mergeRequest = branch.mergeRequests.firstOrNull { !it.hidden }?.toMergeRequestEntry(),
+                    mergeRequest = branch.mergeRequests
+                        .asSequence()
+                        .filter { !it.hidden }
+                        .sortedByDescending { it.createdAt }
+                        .firstOrNull()
+                        ?.toMergeRequestEntry(),
                 )
             }
             .filter { filter.readyToProd == null || it.readyToProd == filter.readyToProd }
@@ -104,10 +109,7 @@ class BranchDashboardService(
     fun mark(user: User, id: UUID, status: TaskStatus) {
         branchRepository.branch(user, id)
             .tasks
-            .onEach {
-                it.status = status
-                it.updatedAt = LocalDateTime.now()
-            }
+            .onEach { it.status = status }
     }
 
     fun getMergeRequest(user: User, id: UUID, externalId: String): BranchDashboardMergeRequestEntry {
@@ -152,6 +154,7 @@ class BranchDashboardService(
             .let {
                 MergeRequest(
                     id = null,
+                    status = it.resolveStatus(),
                     externalStatus = it.detailedMergeStatus,
                     externalId = it.iid.toString(),
                     url = it.webUrl,

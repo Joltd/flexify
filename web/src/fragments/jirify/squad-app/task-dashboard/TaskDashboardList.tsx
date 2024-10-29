@@ -9,8 +9,9 @@ import { EstimationBadge } from "@/components/jirify/common/EstimationBadge";
 import { PriorityBadge } from "@/components/jirify/common/PriorityBadge";
 import { SquadAppJiraIssueStatusBadge } from "@/components/jirify/squad-app/SquadAppJiraIssueStatusBadge";
 import { EmployeeAvatar } from "@/components/jirify/common/EmployeeAvatar";
-import { SprintTaskRecord } from "@/lib/jirify/squad-app/types";
 import { useClipboard } from "@/lib/common/clipboard";
+import { MergeRequestBadge } from "@/components/jirify/common/MergeRequestBadge";
+import { TaskDashboardEntry } from "@/lib/jirify/squad-app/store/type";
 
 export interface TaskDashboardListProps {}
 
@@ -18,12 +19,12 @@ export function TaskDashboardList({}: TaskDashboardListProps) {
   const { dashboard, search, setTask } = useTaskDashboardStore()
   const { copy } = useClipboard()
 
-  const handleCopyTask = (event: SyntheticEvent, task: SprintTaskRecord) => {
+  const handleCopyTask = (event: SyntheticEvent, task: TaskDashboardEntry) => {
     event.stopPropagation()
     copy(task.key)
   }
 
-  const handleCopyTaskWithLink = (event: SyntheticEvent, task: SprintTaskRecord) => {
+  const handleCopyTaskWithLink = (event: SyntheticEvent, task: TaskDashboardEntry) => {
     event.stopPropagation()
     copy(`${task.key} ${task.summary}`, `<a href="${task.url}">${task.key}</a> ${task.summary}`)
   }
@@ -74,9 +75,31 @@ export function TaskDashboardList({}: TaskDashboardListProps) {
                     <Typography noWrap>{entry.summary}</Typography>
                   </Tooltip>
 
-                  {entry.backend && <Chip label="Backend" />}
+                  {entry.backend && (
+                    entry.backend.mergeRequest ? (
+                      <MergeRequestBadge
+                        externalId={entry.backend.mergeRequest.externalId}
+                        url={entry.backend.mergeRequest.url}
+                        status={entry.backend.mergeRequest.status}
+                        targetBranch={entry.backend.name}
+                      />
+                    ) : (
+                      <Chip label={entry.backend.name} />
+                    )
+                  )}
 
-                  {entry.frontend && <Chip label="Frontend" />}
+                  {entry.frontend && (
+                    entry.frontend.mergeRequest ? (
+                      <MergeRequestBadge
+                        externalId={entry.frontend.mergeRequest.externalId}
+                        url={entry.frontend.mergeRequest.url}
+                        status={entry.frontend.mergeRequest.status}
+                        targetBranch={entry.frontend.name}
+                      />
+                    ) : (
+                      <Chip label={entry.frontend.name} />
+                    )
+                  )}
 
                   <Tooltip title={entry.performed ? 'Performed' : ''}>
                     {entry.performed ? <Done color="success" /> : <Box width={24} flexShrink={0} />}

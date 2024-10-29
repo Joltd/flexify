@@ -38,7 +38,7 @@ export function BranchDashboardCreate({}: BranchDashboardCreateProps) {
   }
 
   return (
-    <Stack width={400} padding={2}>
+    <Stack width={600} padding={2}>
       <FormContainer formContext={form} onSuccess={handleSave}>
         <Stack gap={2}>
           {branchSave.error && (

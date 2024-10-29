@@ -26,7 +26,7 @@ export function TaskStatusField({
   onChange,
 }: TaskStatusFieldProps) {
   return (
-    <Stack gap={1}>
+    <Stack gap={1} width={400}>
       <Autocomplete
         options={Object.values(TaskStatusEnum)}
         getOptionLabel={(option) => TaskStatusLabel[option]}

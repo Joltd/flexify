@@ -5,8 +5,8 @@ import com.evgenltd.flexify.user.entity.User
 import org.springframework.stereotype.Service
 
 @Service
-class SyncPerformService(
-    private val syncService: SyncService,
+class TaskSyncManageService(
+    private val syncService: TaskSyncService,
 ) {
 
     fun perform(user: User) {

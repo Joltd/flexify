@@ -1,4 +1,4 @@
-import { EmployeeRecord, TaskStatusEnum } from "@/lib/jirify/common/types";
+import { EmployeeRecord, MergeRequestStatusEnum, TaskStatusEnum } from "@/lib/jirify/common/types";
 import { SquadAppJiraIssueStatusEnum } from "@/lib/jirify/squad-app/types";
 
 export interface SquadAppWorkspaceData {
@@ -30,8 +30,21 @@ export interface TaskDashboardEntry {
   performed: boolean
   estimation?: number
   priority?: number
-  backend: boolean
-  frontend: boolean
+  backend?: TaskDashboardEntryBranch
+  frontend?: TaskDashboardEntryBranch
+}
+
+export interface TaskDashboardEntryBranch {
+  id: string
+  name: string
+  mergeRequest?: TaskDashboardEntryBranchMergeRequest
+}
+
+export interface TaskDashboardEntryBranchMergeRequest {
+  id: string
+  externalId: string
+  url: string
+  status: MergeRequestStatusEnum
 }
 
 export interface TaskDashboardTaskData {
@@ -44,7 +57,9 @@ export interface TaskDashboardTaskData {
   assignee?: EmployeeRecord
   performed: boolean
   backendBranch?: string
+  backendMergeRequest?: TaskDashboardEntryBranchMergeRequest
   frontendBranch?: string
+  frontendMergeRequest?: TaskDashboardEntryBranchMergeRequest
 }
 
 export interface TaskDashboardTaskUpdateData {

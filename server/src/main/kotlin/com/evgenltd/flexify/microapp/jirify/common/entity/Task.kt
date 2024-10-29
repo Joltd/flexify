@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import jakarta.persistence.*
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.LastModifiedDate
 import java.time.LocalDateTime
 import java.util.*
 
@@ -30,7 +32,11 @@ data class Task(
 
     var priority: Int? = null,
 
-    var updatedAt: LocalDateTime? = null,
+    @CreatedDate
+    var createdAt: LocalDateTime = LocalDateTime.now(),
+
+    @LastModifiedDate
+    var updatedAt: LocalDateTime = LocalDateTime.now(),
 
     @JdbcTypeCode(SqlTypes.JSON)
     var properties: Properties? = null,

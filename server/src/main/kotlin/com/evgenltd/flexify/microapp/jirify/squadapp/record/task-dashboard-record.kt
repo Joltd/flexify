@@ -1,6 +1,7 @@
 package com.evgenltd.flexify.microapp.jirify.squadapp.record
 
 import com.evgenltd.flexify.microapp.jirify.common.entity.DevelopmentArea
+import com.evgenltd.flexify.microapp.jirify.common.entity.MergeRequestStatus
 import com.evgenltd.flexify.microapp.jirify.common.entity.TaskStatus
 import com.evgenltd.flexify.microapp.jirify.common.record.EmployeeRecord
 import java.time.LocalDateTime
@@ -35,8 +36,21 @@ data class TaskDashboardEntry(
     val performed: Boolean,
     val estimation: Int?,
     val priority: Int?,
-    val backend: Boolean,
-    val frontend: Boolean,
+    val backend: TaskDashboardEntryBranch?,
+    val frontend: TaskDashboardEntryBranch?,
+)
+
+data class TaskDashboardEntryBranch(
+    val id: UUID,
+    val name: String,
+    val mergeRequest: TaskDashboardEntryBranchMergeRequest?,
+)
+
+data class TaskDashboardEntryBranchMergeRequest(
+    val id: UUID,
+    val externalId: String,
+    val url: String,
+    val status: MergeRequestStatus,
 )
 
 data class TaskDashboardTaskData(
@@ -49,7 +63,9 @@ data class TaskDashboardTaskData(
     val assignee: EmployeeRecord?,
     val performed: Boolean,
     val backendBranch: UUID?,
+    val backendMergeRequest: TaskDashboardEntryBranchMergeRequest?,
     val frontendBranch: UUID?,
+    val frontendMergeRequest: TaskDashboardEntryBranchMergeRequest?,
 )
 
 data class TaskDashboardTaskUpdateData(

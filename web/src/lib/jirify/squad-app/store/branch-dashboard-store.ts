@@ -4,6 +4,7 @@ import { create } from "zustand/index";
 import { observable } from "@/lib/common/store/store";
 import { squadAppUrls } from "@/lib/jirify/squad-app/urls";
 import { DevelopmentArea } from "@/lib/jirify/common/types";
+import { localStorageApi } from "@/lib/common/local-storage";
 
 interface BranchDashboardStoreState {
   area: DevelopmentArea
@@ -32,11 +33,13 @@ export enum BranchDashboardModeEnum {
 export const useBranchDashboardStore = create<BranchDashboardStoreState>((set) => {
   const dashboard = createFetchStore<BranchDashboardEntry[]>('GET', squadAppUrls.branchDashboard.root, { keepData: true })
   const branch = createFetchStore<BranchDashboardBranchData>('GET', squadAppUrls.branchDashboard.branchId)
+  const localStorage = localStorageApi('branchDashboardFilter')
 
   const setFilter = (filter: Partial<BranchDashboardStoreState>) => {
     set({ ...filter })
     dashboard.getState().updateQueryParams({ ...filter })
     dashboard.getState().fetch()
+    localStorage.update({ ...filter })
   }
 
   return {
@@ -46,6 +49,7 @@ export const useBranchDashboardStore = create<BranchDashboardStoreState>((set) =
     setReadyToProd: (readyToProd) => setFilter({ readyToProd }),
     hidden: false,
     setHidden: (hidden) => setFilter({ hidden }),
+    ...localStorage.data,
     search: '',
     setSearch: (search) => set({ search }),
     dashboard: observable(dashboard, set, 'dashboard'),

@@ -9,7 +9,18 @@ export interface MergeRequestBadgeProps {
   status: MergeRequestStatusEnum
   error?: string
   sourceBranch?: string
-  targetBranch: string
+  targetBranch?: string
+}
+
+const Variants: Record<MergeRequestStatusEnum, {
+  color: "error" | "success" | "info" | "warning" | "primary" | "secondary",
+  startIcon?: ReactNode,
+}> = {
+  [MergeRequestStatusEnum.WAITING]: { color: "warning", startIcon: <Pending />},
+  [MergeRequestStatusEnum.READY]: { color: "success", startIcon: <CheckCircle /> },
+  [MergeRequestStatusEnum.ERROR]: { color: "error", startIcon: <Error /> },
+  [MergeRequestStatusEnum.MERGED]: { color: "secondary", startIcon: <CheckCircle /> },
+  [MergeRequestStatusEnum.CLOSED]: { color: "primary", startIcon: <Cancel /> },
 }
 
 export function MergeRequestBadge({
@@ -25,24 +36,6 @@ export function MergeRequestBadge({
     event.stopPropagation()
   }
 
-  const propsByStatus = (): {
-    color: "error" | "success" | "info" | "warning" | "primary" | "secondary",
-    startIcon?: ReactNode,
-  } => {
-    switch (status) {
-      case MergeRequestStatusEnum.WAITING:
-        return { color: "warning", startIcon: <Pending />}
-      case MergeRequestStatusEnum.READY:
-        return { color: "success", startIcon: <CheckCircle /> }
-      case MergeRequestStatusEnum.ERROR:
-        return { color: "error", startIcon: <Error /> }
-      case MergeRequestStatusEnum.MERGED:
-        return { color: "secondary", startIcon: <CheckCircle /> }
-      case MergeRequestStatusEnum.CLOSED:
-        return { color: "primary", startIcon: <Cancel /> }
-    }
-  }
-
   const tooltip = error
     ? `${MergeRequestStatusLabel[status]}: ${error}`
     : `${MergeRequestStatusLabel[status]}`
@@ -50,13 +43,13 @@ export function MergeRequestBadge({
   return (
     <Stack direction="row" gap={1} alignItems="center">
       <Tooltip title={tooltip} placement="left">
-        <Button href={url} target="_blank" variant="outlined" onClick={handleClick} {...propsByStatus()} >
+        <Button href={url} target="_blank" variant="outlined" onClick={handleClick} {...Variants[status]} >
           {externalId}
         </Button>
       </Tooltip>
-      <Typography>{sourceBranch || '...'}</Typography>
-      <ArrowRightAlt />
-      <Typography>{targetBranch}</Typography>
+      {sourceBranch && <Typography>{sourceBranch}</Typography>}
+      {sourceBranch && targetBranch && <ArrowRightAlt />}
+      {targetBranch && <Typography>{targetBranch}</Typography>}
     </Stack>
   )
 }

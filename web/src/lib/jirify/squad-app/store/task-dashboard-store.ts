@@ -4,6 +4,7 @@ import { TaskDashboardData } from "@/lib/jirify/squad-app/store/type";
 import { squadAppUrls } from "@/lib/jirify/squad-app/urls";
 import { DevelopmentArea } from "@/lib/jirify/common/types";
 import { observable } from "@/lib/common/store/store";
+import { localStorageApi } from "@/lib/common/local-storage";
 
 interface TaskDashboardStoreState {
   employees: string[]
@@ -21,32 +22,23 @@ interface TaskDashboardStoreState {
 
 export const useTaskDashboardStore = create<TaskDashboardStoreState>()((set) => {
   const dashboard = createFetchStore<TaskDashboardData>('GET', squadAppUrls.taskDashboard.root, { keepData: true })
+  const localStorage = localStorageApi('taskDashboardFilter')
 
-  const setEmployees = (employees: string[]) => {
-    set({ employees })
-    dashboard.getState().updateQueryParams({ employees })
+  const setFilter = (filter: Partial<TaskDashboardStoreState>) => {
+    set({ ...filter })
+    dashboard.getState().updateQueryParams({ ...filter })
     dashboard.getState().fetch()
-  }
-
-  const setAreas = (areas: DevelopmentArea[]) => {
-    set({ areas })
-    dashboard.getState().updateQueryParams({ areas })
-    dashboard.getState().fetch()
-  }
-
-  const setPerformed = (performed: boolean) => {
-    set({ performed })
-    dashboard.getState().updateQueryParams({ performed })
-    dashboard.getState().fetch()
+    localStorage.update({ ...filter })
   }
 
   return {
     employees: [],
-    setEmployees,
+    setEmployees: (employees) => setFilter({ employees }),
     areas: [],
-    setAreas,
+    setAreas: (areas) => setFilter({ areas }),
     performed: false,
-    setPerformed,
+    setPerformed: (performed) => setFilter({ performed }),
+    ...localStorage.data,
     search: '',
     setSearch: (search) => set({ search }),
     task: null,

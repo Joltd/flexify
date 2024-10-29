@@ -56,35 +56,6 @@ export interface EmployeeRecord {
   me: boolean
 }
 
-export interface SelectRepository {
-  id: string
-  name: string
-}
-
-export interface SelectEmployee {
-  id: string
-  name: string
-  me: boolean
-}
-
-export interface SelectTask {
-  id: string
-  key: string
-  summary: string
-}
-
-export interface EditSprintTask {
-  id: string
-  status: TaskStatusEnum
-  performed: boolean
-}
-
-export interface EditBranch {
-  repository: string
-  name: string
-  parent: string
-}
-
 export enum MergeRequestStatusEnum {
   WAITING = 'WAITING',
   READY = 'READY',
