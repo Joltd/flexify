@@ -1,5 +1,7 @@
 import {
-  FormControlLabel, Grid2,
+  Button,
+  CircularProgress,
+  FormControlLabel, Grid2, IconButton,
   Switch, TextField,
   ToggleButton,
   ToggleButtonGroup,
@@ -11,12 +13,24 @@ import { PastDate } from "@/components/common/PastDate";
 import { useTaskDashboardStore } from "@/lib/jirify/squad-app/store/task-dashboard-store";
 import { EmployeeFilter } from "@/components/jirify/common/EmployeeFilter";
 import { useSquadAppStore } from "@/lib/jirify/squad-app/store/squad-app-store";
+import SyncIcon from "@mui/icons-material/Sync";
+import { useFetchStore } from "@/lib/common/store/fetch-store";
+import { squadAppUrls } from "@/lib/jirify/squad-app/urls";
+import { EstimationBadge } from "@/components/jirify/common/EstimationBadge";
 
 export interface TaskDashboardToolbarProps {}
 
 export function TaskDashboardToolbar({}: TaskDashboardToolbarProps) {
   const squadAppStore = useSquadAppStore()
   const { employees, setEmployees, areas, setAreas, performed, setPerformed, search, setSearch, dashboard } = useTaskDashboardStore()
+  const syncStore = useFetchStore<void>('POST', squadAppUrls.sync)
+
+  const totalEstimation = dashboard.data
+    ?.groups
+    ?.flatMap(group => group.entries)
+    ?.map((task) => task.estimation || 0)
+    ?.reduce((acc, estimation) => acc + estimation, 0)
+    || 0
 
   return (
     <Grid2 size={12} display="flex" alignItems="center" gap={2}>
@@ -55,21 +69,23 @@ export function TaskDashboardToolbar({}: TaskDashboardToolbarProps) {
 
           <Box flexGrow={1} />
 
+          <EstimationBadge value={totalEstimation} />
+
           <PastDate date={dashboard.data.updatedAt} />
 
-          {/*<Button*/}
-          {/*  variant="contained"*/}
-          {/*  color="primary"*/}
-          {/*  startIcon={sync.loading ? (*/}
-          {/*    <CircularProgress color="inherit" size={20}/>*/}
-          {/*  ) : (*/}
-          {/*    <SyncIcon/>*/}
-          {/*  )}*/}
-          {/*  disabled={sync.loading}*/}
-          {/*  onClick={handleSync}*/}
-          {/*>*/}
-          {/*  Sync*/}
-          {/*</Button>*/}
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={syncStore.loading ? (
+              <CircularProgress color="inherit" size={20}/>
+            ) : (
+              <SyncIcon/>
+            )}
+            disabled={syncStore.loading}
+            onClick={() => syncStore.fetch().then(() => dashboard.fetch())}
+          >
+            Sync
+          </Button>
         </>
       )}
     </Grid2>

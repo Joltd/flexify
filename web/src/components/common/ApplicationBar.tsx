@@ -12,7 +12,7 @@ import {
 import AppsIcon from "@mui/icons-material/Apps";
 import { API_URL, URL } from "@/lib/urls";
 import { useApi } from "@/lib/common/api";
-import { ReactNode, useEffect } from "react";
+import { useEffect } from "react";
 import { useBreakpoints } from "@/lib/common/breakpoints";
 import { UserRecord } from "@/lib/common/types";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -24,7 +24,6 @@ export interface ApplicationBarProps {
   navigationItems?: NavigationItem[]
   backButton?: string
   doneButton?: boolean
-  actions?: () => ReactNode
 }
 
 export interface NavigationItem {
@@ -37,7 +36,6 @@ export function ApplicationBar({
   navigationItems,
   backButton,
   doneButton,
-  actions,
 }: ApplicationBarProps) {
   const { isExtraSmall } = useBreakpoints()
   const { get, data } = useApi<UserRecord>(API_URL.user.me)
@@ -121,12 +119,7 @@ export function ApplicationBar({
     <Toolbar sx={{ gap: 2 }} disableGutters>
       {backButton ? renderBackButton() : renderAppButton()}
       {navigationItems ? renderNavigation() : renderTitle()}
-      {doneButton ? renderDoneButton() : (
-        <>
-          {actions?.()}
-          {renderUserInfo()}
-        </>
-      )}
+      {doneButton ? renderDoneButton() : renderUserInfo()}
     </Toolbar>
   </AppBar>
 }
