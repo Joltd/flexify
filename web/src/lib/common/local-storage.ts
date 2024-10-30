@@ -1,5 +1,7 @@
 export function localStorageApi(field: string) {
-  let data = JSON.parse(localStorage.getItem(field) || '{}')
+  let data = typeof localStorage !== 'undefined'
+    ? JSON.parse(localStorage.getItem(field) || '{}')
+    : {}
 
   const set = (newData: any) => {
     data = newData
