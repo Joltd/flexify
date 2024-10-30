@@ -34,6 +34,7 @@ export const useBranchDashboardStore = create<BranchDashboardStoreState>((set) =
   const dashboard = createFetchStore<BranchDashboardEntry[]>('GET', squadAppUrls.branchDashboard.root, { keepData: true })
   const branch = createFetchStore<BranchDashboardBranchData>('GET', squadAppUrls.branchDashboard.branchId)
   const localStorage = localStorageApi('branchDashboardFilter')
+  dashboard.getState().updateQueryParams(localStorage.data)
 
   const setFilter = (filter: Partial<BranchDashboardStoreState>) => {
     set({ ...filter })

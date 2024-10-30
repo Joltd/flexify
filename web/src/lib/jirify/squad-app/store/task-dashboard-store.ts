@@ -23,6 +23,7 @@ interface TaskDashboardStoreState {
 export const useTaskDashboardStore = create<TaskDashboardStoreState>()((set) => {
   const dashboard = createFetchStore<TaskDashboardData>('GET', squadAppUrls.taskDashboard.root, { keepData: true })
   const localStorage = localStorageApi('taskDashboardFilter')
+  dashboard.getState().updateQueryParams(localStorage.data)
 
   const setFilter = (filter: Partial<TaskDashboardStoreState>) => {
     set({ ...filter })

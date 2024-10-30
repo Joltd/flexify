@@ -123,9 +123,11 @@ export function TaskDashboardView({}: TaskDashboardViewProps) {
                       status={task.data.backendMergeRequest.status}
                     />
                   )}
-                  <IconButton onClick={() => handleViewBranch(task.data?.backendBranch)} disabled={!task.data.backendBranch}>
-                    <Visibility />
-                  </IconButton>
+                  <Stack justifyContent="center">
+                    <IconButton onClick={() => handleViewBranch(task.data?.backendBranch)} disabled={!task.data.backendBranch}>
+                      <Visibility />
+                    </IconButton>
+                  </Stack>
                 </Stack>
                 <Stack direction="row" gap={1}>
                   <BranchFieldElement
@@ -144,9 +146,11 @@ export function TaskDashboardView({}: TaskDashboardViewProps) {
                       status={task.data.frontendMergeRequest.status}
                     />
                   )}
-                  <IconButton onClick={() => handleViewBranch(task.data?.frontendBranch)} disabled={!task.data.frontendBranch}>
-                    <Visibility />
-                  </IconButton>
+                  <Stack justifyContent="center">
+                    <IconButton onClick={() => handleViewBranch(task.data?.frontendBranch)} disabled={!task.data.frontendBranch}>
+                      <Visibility />
+                    </IconButton>
+                  </Stack>
                 </Stack>
               </>
             )}

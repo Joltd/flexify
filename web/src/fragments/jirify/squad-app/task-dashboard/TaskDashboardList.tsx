@@ -30,7 +30,7 @@ export function TaskDashboardList({}: TaskDashboardListProps) {
   }
 
   return (
-    <Grid2 size={12} display="flex" flexDirection="column">
+    <Grid2 size={12} display="flex" flexDirection="column" gap={1}>
       {dashboard.loading ? (
         <ListSkeleton />
       ) : dashboard.error ? (

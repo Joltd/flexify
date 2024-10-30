@@ -11,6 +11,7 @@ import com.evgenltd.flexify.microapp.jirify.squadapp.entity.properties
 import com.evgenltd.flexify.microapp.jirify.squadapp.entity.repositoryByType
 import com.evgenltd.flexify.microapp.jirify.squadapp.record.*
 import com.evgenltd.flexify.user.entity.User
+import jakarta.annotation.PostConstruct
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*

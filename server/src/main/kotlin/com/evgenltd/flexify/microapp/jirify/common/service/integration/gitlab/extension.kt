@@ -10,8 +10,8 @@ fun MergeRequest.resolveStatus(): MergeRequestStatus {
     }
 
     when (detailedMergeStatus) {
-        "preparing", "checking" -> MergeRequestStatus.WAITING
-        "mergeable" -> MergeRequestStatus.READY
+        "preparing", "checking" -> return MergeRequestStatus.WAITING
+        "mergeable" -> return MergeRequestStatus.READY
     }
 
     return MergeRequestStatus.ERROR

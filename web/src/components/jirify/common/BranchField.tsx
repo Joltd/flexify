@@ -146,6 +146,7 @@ export function BranchField({
         value={name}
         onChange={handleChangeName}
         required
+        sx={{ flexGrow: 1 }}
       />
       <LinkIcon />
       <Autocomplete
@@ -154,9 +155,9 @@ export function BranchField({
         value={branch}
         onChange={handleSelectParent}
         getOptionLabel={(option) => option.label}
-        sx={{ minWidth: 200, flexGrow: 1 }}
+        sx={{ minWidth: 150 }}
       />
-      <IconButton size="small" onClick={handleBackToSelect}>
+      <IconButton size="small" onClick={handleBackToSelect} sx={{ flexShrink: 0 }}>
         <CloseIcon />
       </IconButton>
     </Stack>
