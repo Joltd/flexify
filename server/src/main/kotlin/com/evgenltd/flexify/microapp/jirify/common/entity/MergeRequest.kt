@@ -1,5 +1,8 @@
 package com.evgenltd.flexify.microapp.jirify.common.entity
 
+import com.evgenltd.flexify.common.Application
+import com.evgenltd.flexify.common.Label
+import com.evgenltd.flexify.microapp.MicroApp
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import jakarta.persistence.*
 import org.springframework.data.annotation.CreatedDate
@@ -9,12 +12,14 @@ import java.util.*
 
 @Entity
 @Table(name = "merge_requests")
+@Application(MicroApp.JIRIFY)
 data class MergeRequest(
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
 
+    @Label
     var externalId: String,
 
     var url: String,

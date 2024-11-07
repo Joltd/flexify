@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
 class UserController(
@@ -41,7 +42,14 @@ class UserController(
         val authRequest = UsernamePasswordAuthenticationToken.unauthenticated(request.login, request.password)
         val authResponse = authenticationManager.authenticate(authRequest)
         val user = authResponse.principal as ApplicationUser
-        val token = tokenProvider.createToken(user.username, user.applications)
+        val token = tokenProvider.createToken(user.username, user.applications, user.tenants)
+        return ResponseEntity.ok(AuthenticationResponse(token))
+    }
+
+    @PostMapping("/api/user/tenant")
+    fun changeTenant(@RequestBody tenantId: UUID): ResponseEntity<AuthenticationResponse> {
+        val user = userService.changeTenant(tenantId)
+        val token = tokenProvider.createToken(user.username, user.applications, user.tenants)
         return ResponseEntity.ok(AuthenticationResponse(token))
     }
 

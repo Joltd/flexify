@@ -1,5 +1,8 @@
 package com.evgenltd.flexify.microapp.jirify.common.entity
 
+import com.evgenltd.flexify.common.Application
+import com.evgenltd.flexify.common.Label
+import com.evgenltd.flexify.microapp.MicroApp
 import jakarta.persistence.*
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
@@ -8,6 +11,7 @@ import java.util.*
 
 @Entity
 @Table(name = "employees")
+@Application(MicroApp.JIRIFY)
 data class Employee(
 
     @Id
@@ -16,6 +20,7 @@ data class Employee(
 
     var externalId: String,
 
+    @Label
     var name: String,
 
     var me: Boolean = false,

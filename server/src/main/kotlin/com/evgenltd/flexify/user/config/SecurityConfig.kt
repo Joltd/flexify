@@ -28,22 +28,22 @@ import javax.crypto.spec.SecretKeySpec
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
 @EnableWebSecurity
-open class SecurityConfig(
+class SecurityConfig(
     private val properties: SecurityProperties
 ) {
 
     @Bean
-    open fun securityFilterChain(http: HttpSecurity): SecurityFilterChain = http
+    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain = http
         .csrf { it.disable() }
         .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
         .oauth2ResourceServer { it.jwt(Customizer.withDefaults()) }
         .build()
 
     @Bean
-    open fun passwordEncoder(): PasswordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder()
+    fun passwordEncoder(): PasswordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder()
 
     @Bean
-    open fun authenticationManager(userDetailsService: UserDetailsService, passwordEncoder: PasswordEncoder): AuthenticationManager {
+    fun authenticationManager(userDetailsService: UserDetailsService, passwordEncoder: PasswordEncoder): AuthenticationManager {
         val authenticationProvider = DaoAuthenticationProvider()
         authenticationProvider.setUserDetailsService(userDetailsService)
         authenticationProvider.setPasswordEncoder(passwordEncoder)
@@ -51,13 +51,13 @@ open class SecurityConfig(
     }
 
     @Bean
-    open fun jwtEncoder(): JwtEncoder = NimbusJwtEncoder(ImmutableSecret(secretKey()))
+    fun jwtEncoder(): JwtEncoder = NimbusJwtEncoder(ImmutableSecret(secretKey()))
 
     @Bean
-    open fun jwtDecoder(): JwtDecoder = NimbusJwtDecoder
-            .withSecretKey(secretKey())
-            .macAlgorithm(ALGORITHM)
-            .build()
+    fun jwtDecoder(): JwtDecoder = NimbusJwtDecoder
+        .withSecretKey(secretKey())
+        .macAlgorithm(ALGORITHM)
+        .build()
 
     private fun secretKey(): SecretKeySpec {
         val key = Base64.from(properties.secret).decode()
@@ -68,6 +68,7 @@ open class SecurityConfig(
         val ALGORITHM = MacAlgorithm.HS512
         const val AUTHORITIES = "authorities"
         const val APPLICATIONS = "applications"
+        const val TENANTS = "tenants"
     }
 
 }

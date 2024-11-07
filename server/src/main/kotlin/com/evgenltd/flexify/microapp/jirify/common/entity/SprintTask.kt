@@ -1,5 +1,7 @@
 package com.evgenltd.flexify.microapp.jirify.common.entity
 
+import com.evgenltd.flexify.common.Application
+import com.evgenltd.flexify.microapp.MicroApp
 import jakarta.persistence.*
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
@@ -8,6 +10,7 @@ import java.util.*
 
 @Entity
 @Table(name = "sprint_tasks")
+@Application(MicroApp.JIRIFY)
 data class SprintTask(
 
     @Id

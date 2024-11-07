@@ -1,5 +1,8 @@
 package com.evgenltd.flexify.microapp.jirify.common.entity
 
+import com.evgenltd.flexify.common.Application
+import com.evgenltd.flexify.common.Label
+import com.evgenltd.flexify.microapp.MicroApp
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import jakarta.persistence.*
 import org.hibernate.annotations.JdbcTypeCode
@@ -11,12 +14,14 @@ import java.util.*
 
 @Entity
 @Table(name = "branches")
+@Application(MicroApp.JIRIFY)
 data class Branch(
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
 
+    @Label
     var name: String,
 
     var base: Boolean = false,
