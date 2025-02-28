@@ -117,9 +117,12 @@ export function ApplicationBar({
 
   return <AppBar position="sticky" sx={{ padding: "0 16px 0 8px" }}>
     <Toolbar sx={{ gap: 2 }} disableGutters>
-      {backButton ? renderBackButton() : renderAppButton()}
-      {navigationItems ? renderNavigation() : renderTitle()}
-      {doneButton ? renderDoneButton() : renderUserInfo()}
+      {/*{backButton && renderBackButton()}*/}
+      {/*{renderAppButton()}*/}
+      {/*{navigationItems && renderNavigation()}*/}
+      {/*{renderTitle()}*/}
+      {/*{doneButton && renderDoneButton()}*/}
+      {/*{renderUserInfo()}*/}
     </Toolbar>
   </AppBar>
 }

@@ -7,6 +7,8 @@ export interface FetchStoreState<T> {
   loading: boolean
   error: string | null
   data: T | null
+  body?: Record<string, any>
+  updateBody: (body: Record<string, any>) => void
   pathParams?: Record<string, any>
   updatePathParams: (pathParams: Record<string, any>) => void
   queryParams?: Record<string, any>
@@ -50,9 +52,9 @@ const prepareFetchStoreCreator = <T>(method: string, path: string, storeOptions?
         set({ loading: !get().data })
       }
       try {
-        let preparedPath = fillPathParams(path, {...get().pathParams, ...options?.pathParams})
-        preparedPath = fillQueryParams(preparedPath, {...get().queryParams, ...options?.queryParams})
-        const initRequest = fillRequestInit(method, options?.body, options?.headers)
+        let preparedPath = fillPathParams(path, { ...get().pathParams, ...options?.pathParams })
+        preparedPath = fillQueryParams(preparedPath, { ...get().queryParams, ...options?.queryParams })
+        const initRequest = fillRequestInit(method, { ...get().body, ...options?.body }, options?.headers)
 
         const response = await fetch(preparedPath, initRequest)
 
@@ -78,10 +80,12 @@ const prepareFetchStoreCreator = <T>(method: string, path: string, storeOptions?
       loading: false,
       error: null,
       data: null,
+      body: {},
+      updateBody: (body: Record<string, any>) => set({ body: { ...get().body, ...body } }),
       pathParams: {},
-      updatePathParams: (pathParams: Record<string, any>) => set({pathParams: {...get().pathParams, ...pathParams}}),
+      updatePathParams: (pathParams: Record<string, any>) => set({ pathParams: { ...get().pathParams, ...pathParams } }),
       queryParams: {},
-      updateQueryParams: (queryParams: Record<string, any>) => set({queryParams: {...get().queryParams, ...queryParams}}),
+      updateQueryParams: (queryParams: Record<string, any>) => set({ queryParams: { ...get().queryParams, ...queryParams } }),
       fetch: exchange,
       reset: () => set({ loading: false, error: null, data: null, pathParams: {}, queryParams: {} }),
     }

@@ -10,7 +10,7 @@ class TenantResolver : CurrentTenantIdentifierResolver<UUID> {
 
     private val mapper: ObjectMapper = jacksonObjectMapper()
 
-    override fun resolveCurrentTenantIdentifier(): UUID? = getCurrentTenant(mapper) ?: Tenant.DEFAULT
+    override fun resolveCurrentTenantIdentifier(): UUID = getCurrentTenant(mapper) ?: Tenant.DEFAULT
 
     override fun validateExistingCurrentSessions(): Boolean = true
 
